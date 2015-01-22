@@ -5,7 +5,7 @@
 ;; Author: Artem Malyshev <proofit404@gmail.com>
 ;; URL: https://github.com/proofit404/pythonic
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "24"))
+;; Package-Requires: ((emacs "24") (f "0.17.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -25,6 +25,18 @@
 ;; See the README for more details.
 
 ;;; Code:
+
+(require 'python)
+(require 'dash)
+(require 'f)
+
+(defun pythonic-executable ()
+  "Python executable."
+  (let ((python (if (eq system-type 'windows-nt) "pythonw" "python"))
+        (bin (if (eq system-type 'windows-nt) "Scripts" "bin")))
+    (--if-let python-shell-virtualenv-path
+        (f-join it bin python)
+      python)))
 
 (provide 'pythonic)
 
