@@ -27,15 +27,21 @@
 ;;; Code:
 
 (require 'python)
+(require 'tramp)
 (require 'dash)
 (require 'f)
 
 (defun pythonic-executable ()
   "Python executable."
-  (let ((python (if (eq system-type 'windows-nt) "pythonw" "python"))
-        (bin (if (eq system-type 'windows-nt) "Scripts" "bin")))
+  (let* ((windowsp (eq system-type 'windows-nt))
+         (python (if windowsp "pythonw" "python"))
+         (bin (if windowsp "Scripts" "bin")))
     (--if-let python-shell-virtualenv-path
-        (f-join it bin python)
+        (f-join (if (tramp-tramp-file-p it)
+                    (tramp-file-name-localname (tramp-dissect-file-name it))
+                  it)
+                bin
+                python)
       python)))
 
 (provide 'pythonic)
