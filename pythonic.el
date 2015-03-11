@@ -44,6 +44,11 @@
                 python)
       python)))
 
+;; (let ((default-directory "/drweb:"))
+;;   (get-buffer-create "a")
+;;   (start-file-process "a" "a" "/opt/multiscanner/virtualenv/multiscanner/bin/python" "calc.py")
+;;   (pop-to-buffer "a"))
+
 (provide 'pythonic)
 
 ;;; pythonic.el ends here
