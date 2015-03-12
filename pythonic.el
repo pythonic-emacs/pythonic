@@ -31,12 +31,18 @@
 (require 'dash)
 (require 'f)
 
+(defvaralias 'pythonic--virtualenv-path
+  (--if-let (boundp 'python-shell-virtualenv-root)
+      it
+    'python-shell-virtualenv-path)
+  "Alias to `python.el' virtualenv variable.")
+
 (defun pythonic--executable ()
   "Python executable."
   (let* ((windowsp (eq system-type 'windows-nt))
          (python (if windowsp "pythonw" "python"))
          (bin (if windowsp "Scripts" "bin")))
-    (--if-let python-shell-virtualenv-path
+    (--if-let pythonic--virtualenv-path
         (f-join (if (tramp-tramp-file-p it)
                     (tramp-file-name-localname (tramp-dissect-file-name it))
                   it)
