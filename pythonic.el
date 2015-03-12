@@ -31,7 +31,7 @@
 (require 'dash)
 (require 'f)
 
-(defun pythonic-executable ()
+(defun pythonic--executable ()
   "Python executable."
   (let* ((windowsp (eq system-type 'windows-nt))
          (python (if windowsp "pythonw" "python"))
@@ -43,11 +43,6 @@
                 bin
                 python)
       python)))
-
-;; (let ((default-directory "/drweb:"))
-;;   (get-buffer-create "a")
-;;   (start-file-process "a" "a" "/opt/multiscanner/virtualenv/multiscanner/bin/python" "calc.py")
-;;   (pop-to-buffer "a"))
 
 (provide 'pythonic)
 
