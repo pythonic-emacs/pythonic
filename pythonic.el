@@ -32,8 +32,8 @@
 (require 'f)
 
 (defvaralias 'pythonic--virtualenv-path
-  (--if-let (boundp 'python-shell-virtualenv-root)
-      it
+  (if (boundp 'python-shell-virtualenv-root)
+      'python-shell-virtualenv-root
     'python-shell-virtualenv-path)
   "Alias to `python.el' virtualenv variable.")
 
