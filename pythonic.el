@@ -55,6 +55,11 @@
   (interactive "DEnv: ")
   (setq pythonic--virtualenv-path virtualenv))
 
+(defun pythonic-deactivate ()
+  "Deactivate python virtual environment."
+  (interactive)
+  (setq pythonic--virtualenv-path nil))
+
 (provide 'pythonic)
 
 ;;; pythonic.el ends here

@@ -38,6 +38,12 @@
     (pythonic-activate "/home/me/env")
     (should (s-equals-p python-shell-virtualenv-path "/home/me/env"))))
 
+(ert-deftest test-pythonic-deactivate ()
+  "Check we can deactivate virtual environment."
+  (let ((python-shell-virtualenv-path "/home/me/env"))
+    (pythonic-deactivate)
+    (should (null python-shell-virtualenv-path))))
+
 (provide 'pythonic-test)
 
 ;;; pythonic-test.el ends here
