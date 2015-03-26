@@ -50,6 +50,11 @@
                 python)
       python)))
 
+(defun pythonic-activate (virtualenv)
+  "Activate python virtual environment."
+  (interactive "DEnv: ")
+  (setq pythonic--virtualenv-path virtualenv))
+
 (provide 'pythonic)
 
 ;;; pythonic.el ends here

@@ -32,6 +32,12 @@
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic--executable)))))
 
+(ert-deftest test-pythonic-activate ()
+  "Check we can activate virtual environment."
+  (let (python-shell-virtualenv-path)
+    (pythonic-activate "/home/me/env")
+    (should (s-equals-p python-shell-virtualenv-path "/home/me/env"))))
+
 (provide 'pythonic-test)
 
 ;;; pythonic-test.el ends here
