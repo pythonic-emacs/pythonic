@@ -37,6 +37,11 @@
     'python-shell-virtualenv-path)
   "Alias to `python.el' virtualenv variable.")
 
+(defun pythonic-remote-p ()
+  "Determine remote or local virtual environment."
+  (--if-let pythonic--virtualenv-path
+      (tramp-tramp-file-p it)))
+
 (defun pythonic--executable ()
   "Python executable."
   (let* ((windowsp (eq system-type 'windows-nt))
@@ -50,9 +55,15 @@
                 python)
       python)))
 
+(defun pythonic--command ()
+  "Get command name to start python process."
+  (if (pythonic-remote-p)
+      "ssh"
+    (pythonic--executable)))
+
 ;;;###autoload
 (defun pythonic-activate (virtualenv)
-  "Activate python virtual environment."
+  "Activate python VIRTUALENV."
   (interactive "DEnv: ")
   (setq pythonic--virtualenv-path virtualenv))
 

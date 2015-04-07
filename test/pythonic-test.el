@@ -7,6 +7,8 @@
 (require 'ert)
 (require 'pythonic)
 
+;;; Executable.
+
 (ert-deftest test-pythonic-executable ()
   "Check python executable detection."
   (should (s-equals-p "python" (pythonic--executable))))
@@ -31,6 +33,19 @@
   "Check python executable detection on remote machine."
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic--executable)))))
+
+;;; Command.
+
+(ert-deftest test-pythonic-command ()
+  "Check we get correct python command."
+  (should (s-equals-p "python" (pythonic--command))))
+
+(ert-deftest test-pythonic-command-remote ()
+  "Check we run python on remote hosts over ssh."
+  (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
+    (should (s-equals-p "ssh" (pythonic--command)))))
+
+;;; Activate and deactivate virtual environment.
 
 (ert-deftest test-pythonic-activate ()
   "Check we can activate virtual environment."
