@@ -50,11 +50,13 @@
                 python)
       python)))
 
+;;;###autoload
 (defun pythonic-activate (virtualenv)
   "Activate python virtual environment."
   (interactive "DEnv: ")
   (setq pythonic--virtualenv-path virtualenv))
 
+;;;###autoload
 (defun pythonic-deactivate ()
   "Deactivate python virtual environment."
   (interactive)
