@@ -31,7 +31,7 @@
 (require 'dash)
 (require 'f)
 
-(defvaralias 'pythonic--virtualenv-path
+(defvaralias 'pythonic-env
   (if (boundp 'python-shell-virtualenv-root)
       'python-shell-virtualenv-root
     'python-shell-virtualenv-path)
@@ -39,39 +39,42 @@
 
 (defun pythonic-remote-p ()
   "Determine remote or local virtual environment."
-  (--if-let pythonic--virtualenv-path
-      (tramp-tramp-file-p it)))
+  (when pythonic-env
+    (tramp-tramp-file-p pythonic-env)))
 
-(defun pythonic--executable ()
+(defun pythonic-environment ()
+  "Normalized python virtual environment location."
+  (if (pythonic-remote-p)
+      (tramp-file-name-localname
+       (tramp-dissect-file-name pythonic-env))
+    pythonic-env))
+
+(defun pythonic-executable ()
   "Python executable."
   (let* ((windowsp (eq system-type 'windows-nt))
          (python (if windowsp "pythonw" "python"))
          (bin (if windowsp "Scripts" "bin")))
-    (--if-let pythonic--virtualenv-path
-        (f-join (if (tramp-tramp-file-p it)
-                    (tramp-file-name-localname (tramp-dissect-file-name it))
-                  it)
-                bin
-                python)
+    (if pythonic-env
+        (f-join (pythonic-environment) bin python)
       python)))
 
-(defun pythonic--command ()
+(defun pythonic-command ()
   "Get command name to start python process."
   (if (pythonic-remote-p)
       "ssh"
-    (pythonic--executable)))
+    (pythonic-executable)))
 
 ;;;###autoload
 (defun pythonic-activate (virtualenv)
   "Activate python VIRTUALENV."
   (interactive "DEnv: ")
-  (setq pythonic--virtualenv-path virtualenv))
+  (setq pythonic-env virtualenv))
 
 ;;;###autoload
 (defun pythonic-deactivate ()
   "Deactivate python virtual environment."
   (interactive)
-  (setq pythonic--virtualenv-path nil))
+  (setq pythonic-env nil))
 
 (provide 'pythonic)
 
