@@ -45,6 +45,18 @@
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "ssh" (pythonic-command)))))
 
+;;; Args.
+
+(ert-deftest test-pythonic-args ()
+  "Check pythonic arguments substitution."
+  (should (equal '("-V") (pythonic-args "-V"))))
+
+(ert-deftest test-pythonic-args-remote ()
+  "Check pythonic arguments on remote machine."
+  (let ((python-shell-virtualenv-path "/localhost:/path/to/env"))
+    (should (equal '("/path/to/env/bin/python" "-V")
+                   (pythonic-args "-V")))))
+
 ;;; Activate and deactivate virtual environment.
 
 (ert-deftest test-pythonic-activate ()

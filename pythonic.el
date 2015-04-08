@@ -64,6 +64,12 @@
       "ssh"
     (pythonic-executable)))
 
+(defun pythonic-args (&rest args)
+  "Get python process arguments."
+  (if (pythonic-remote-p)
+      (cons (pythonic-executable) args)
+    args))
+
 ;;;###autoload
 (defun pythonic-activate (virtualenv)
   "Activate python VIRTUALENV."
