@@ -72,6 +72,29 @@
       (cons (pythonic-executable) args)
     args))
 
+(defun call-pythonic (&optional infile destination display &rest args)
+  "Pythonic wrapper around `call-process'.
+
+INFILE, DESTINATION, DISPLAY and ARGS are the same as for
+`call-process'."
+  (apply 'call-process
+         (pythonic-command)
+         infile
+         destination
+         display
+         (apply 'pythonic-args args)))
+
+(defun start-pythonic (name buffer-or-name &rest args)
+  "Pythonic wrapper around `start-process'.
+
+NAME, BUFFER-OR-NAME and ARGS are the same as for
+`call-process'."
+  (apply 'start-process
+         name
+         buffer-or-name
+         (pythonic-command)
+         (apply 'pythonic-args args)))
+
 ;;;###autoload
 (defun pythonic-activate (virtualenv)
   "Activate python VIRTUALENV."
