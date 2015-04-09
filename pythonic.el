@@ -39,8 +39,10 @@
 
 (defun pythonic-remote-p ()
   "Determine remote or local virtual environment."
-  (when pythonic-env
-    (tramp-tramp-file-p pythonic-env)))
+  (if pythonic-env
+      (tramp-tramp-file-p pythonic-env)
+    (when python-shell-interpreter
+      (tramp-tramp-file-p python-shell-interpreter))))
 
 (defun pythonic-environment ()
   "Normalized python virtual environment location."

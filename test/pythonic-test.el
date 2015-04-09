@@ -34,6 +34,22 @@
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
 
+;;; Tramp.
+
+(ert-deftest test-pythonic-remote-p ()
+  "Check we can detect remote settings properly."
+  (should-not (pythonic-remote-p)))
+
+(ert-deftest test-pythonic-remote-p-virtualenv ()
+  "Check remote virtual environment."
+  (let ((python-shell-virtualenv-path "/localhost:/path/to/env"))
+    (should (pythonic-remote-p))))
+
+(ert-deftest test-pythonic-remote-p-interpreter ()
+  "Check remote interpreter."
+  (let ((python-shell-interpreter "/localhost:/path/to/python"))
+    (should (pythonic-remote-p))))
+
 ;;; Command.
 
 (ert-deftest test-pythonic-command ()
