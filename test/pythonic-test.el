@@ -18,11 +18,6 @@
   (let ((python-shell-virtualenv-path "/home/me/env"))
     (should (s-equals-p "/home/me/env/bin/python" (pythonic-executable)))))
 
-(ert-deftest test-pythonic-executable-windows ()
-  "Check python executable detection on windows platform."
-  (let ((system-type 'windows-nt))
-    (should (s-equals-p "pythonw" (pythonic-executable)))))
-
 (ert-deftest test-pythonic-executable-windows-virtualenv ()
   "Check python executable detection on windows platform."
   (let ((system-type 'windows-nt)
@@ -33,6 +28,16 @@
   "Check python executable detection on remote machine."
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
+
+(ert-deftest test-pythonic-executable-interpreter ()
+  "Check python executable detection with interpreter specified."
+  (let ((python-shell-interpreter "/path/to/the/python"))
+    (should (s-equals-p "/path/to/the/python" (pythonic-executable)))))
+
+(ert-deftest test-pythonic-executable-interpreter-remote ()
+  "Check python executable detection on remote host."
+  (let ((python-shell-interpreter "/localhost:/path/to/the/python"))
+    (should (s-equals-p "/path/to/the/python" (pythonic-executable)))))
 
 ;;; Tramp.
 
@@ -85,7 +90,7 @@
   "Check we can deactivate virtual environment."
   (let ((python-shell-virtualenv-path "/home/me/env"))
     (pythonic-deactivate)
-    (should (null python-shell-virtualenv-path))))
+    (should-not python-shell-virtualenv-path)))
 
 (provide 'pythonic-test)
 

@@ -44,12 +44,12 @@
     (when python-shell-interpreter
       (tramp-tramp-file-p python-shell-interpreter))))
 
-(defun pythonic-environment ()
-  "Normalized python virtual environment location."
+(defun pythonic-file-name (file)
+  "Normalized FILE location with out tramp prefix."
   (if (pythonic-remote-p)
       (tramp-file-name-localname
-       (tramp-dissect-file-name pythonic-env))
-    pythonic-env))
+       (tramp-dissect-file-name file))
+    file))
 
 (defun pythonic-executable ()
   "Python executable."
@@ -57,8 +57,8 @@
          (python (if windowsp "pythonw" "python"))
          (bin (if windowsp "Scripts" "bin")))
     (if pythonic-env
-        (f-join (pythonic-environment) bin python)
-      python)))
+        (f-join (pythonic-file-name pythonic-env) bin python)
+      (pythonic-file-name python-shell-interpreter))))
 
 (defun pythonic-command ()
   "Get command name to start python process."
@@ -67,7 +67,7 @@
     (pythonic-executable)))
 
 (defun pythonic-args (&rest args)
-  "Get python process arguments."
+  "Get python process ARGS."
   (if (pythonic-remote-p)
       (cons (pythonic-executable) args)
     args))
