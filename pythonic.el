@@ -41,12 +41,11 @@
   "Determine remote or local virtual environment."
   (if pythonic-env
       (tramp-tramp-file-p pythonic-env)
-    (when python-shell-interpreter
-      (tramp-tramp-file-p python-shell-interpreter))))
+    (tramp-tramp-file-p python-shell-interpreter)))
 
 (defun pythonic-file-name (file)
   "Normalized FILE location with out tramp prefix."
-  (if (pythonic-remote-p)
+  (if (tramp-tramp-file-p file)
       (tramp-file-name-localname
        (tramp-dissect-file-name file))
     file))
