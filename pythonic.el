@@ -68,7 +68,15 @@
 (defun pythonic-args (&rest args)
   "Get python process ARGS."
   (if (pythonic-remote-p)
-      (cons (pythonic-executable) args)
+      (let (remote-args)
+        (when python-shell-extra-pythonpaths
+          (add-to-list 'remote-args "env" t)
+          (add-to-list 'remote-args
+                       (format "PYTHONPATH=%s"
+                               (s-join ":" python-shell-extra-pythonpaths))
+                       t))
+        (add-to-list 'remote-args (pythonic-executable) t)
+        (append remote-args args))
     args))
 
 (defun call-pythonic (&optional infile destination display &rest args)

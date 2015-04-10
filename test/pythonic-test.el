@@ -49,13 +49,20 @@
   "Check virtual env python args on the remote host."
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (equal '("/vagrant/env/bin/python" "-V")
-                        (pythonic-args "-V")))))
+                   (pythonic-args "-V")))))
 
 (ert-deftest test-pythonic-args-interpreter-remote ()
   "Check interpreter python args on the remote host."
   (let ((python-shell-interpreter "/localhost:/vagrant/env/bin/python"))
     (should (equal '("/vagrant/env/bin/python" "-V")
-                        (pythonic-args "-V")))))
+                   (pythonic-args "-V")))))
+
+(ert-deftest test-pythonic-args-extra-pythonpaths ()
+  "Check PYTHONPATH on the remote host."
+  (let ((python-shell-interpreter "/localhost:python")
+        (python-shell-extra-pythonpaths '("/home/me/one" "/home/me/two")))
+    (should (equal '("env" "PYTHONPATH=/home/me/one:/home/me/two" "python" "-V")
+                   (pythonic-args "-V")))))
 
 ;;; Processes.
 
