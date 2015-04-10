@@ -57,6 +57,17 @@
     (should (equal '("/vagrant/env/bin/python" "-V")
                         (pythonic-args "-V")))))
 
+;;; Processes.
+
+(ert-deftest test-call-pythonic ()
+  "Check we can run synchronous python process."
+  (should (eq 0 (call-pythonic nil "*out*" nil "-V"))))
+
+(ert-deftest test-start-pythonic ()
+  "Check we can run asynchronous python process."
+  (should (equal '("python" "-V")
+                 (process-command (start-pythonic "out" "*out*" "-V")))))
+
 ;;; Activate and deactivate virtual environment.
 
 (ert-deftest test-pythonic-activate ()
