@@ -79,26 +79,28 @@
         (append remote-args args))
     args))
 
-(defun call-pythonic (&optional infile destination display &rest args)
+(cl-defun call-pythonic (&key file buffer display args)
   "Pythonic wrapper around `call-process'.
 
-INFILE, DESTINATION, DISPLAY and ARGS are the same as for
-`call-process'."
+FILE is the input file. BUFFER is the output destination. DISPLAY
+specifies to redisplay BUFFER on new output. ARGS is the list of
+arguments passed to `call-process'."
   (apply 'call-process
          (pythonic-command)
-         infile
-         destination
+         file
+         buffer
          display
          (apply 'pythonic-args args)))
 
-(defun start-pythonic (name buffer-or-name &rest args)
+(cl-defun start-pythonic (&key process buffer args)
   "Pythonic wrapper around `start-process'.
 
-NAME, BUFFER-OR-NAME and ARGS are the same as for
-`call-process'."
+PROCESS is a name of the created process. BUFFER is a output
+destination. ARGS are the list of args passed to
+`start-process'."
   (apply 'start-process
-         name
-         buffer-or-name
+         process
+         buffer
          (pythonic-command)
          (apply 'pythonic-args args)))
 

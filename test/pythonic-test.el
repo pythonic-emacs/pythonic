@@ -83,12 +83,16 @@
 
 (ert-deftest test-call-pythonic ()
   "Check we can run synchronous python process."
-  (should (eq 0 (call-pythonic nil "*out*" nil "-V"))))
+  (should (eq 0 (call-pythonic :buffer "*out*"
+                               :args '("-V")))))
 
 (ert-deftest test-start-pythonic ()
   "Check we can run asynchronous python process."
   (should (equal '("python" "-V")
-                 (process-command (start-pythonic "out" "*out*" "-V")))))
+                 (process-command
+                  (start-pythonic :process "out"
+                                  :buffer "*out*"
+                                  :args '("-V"))))))
 
 
 ;;; Activate and deactivate virtual environment.
