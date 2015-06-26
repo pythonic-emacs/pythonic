@@ -18,6 +18,12 @@
   "Check basic python args."
   (should (equal '("-V") (pythonic-args "-V"))))
 
+;;; TODO: /ssh:root@localhost#46/path/to/env
+;;; TODO: /ssh:root@localhost#46/path/to/env and
+;;; `tramp-default-method' doesn't set to ssh, plink, scp, pscp.
+;;; TODO: `tramp-default-user' and `tramp-default-host' when
+;;; /ssh::/path/to/env was specified.
+
 
 ;;; Interpreter.
 
