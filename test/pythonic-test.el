@@ -6,6 +6,9 @@
 
 (require 'ert)
 (require 'pythonic)
+(require 's)
+
+;;; Executable.
 
 (ert-deftest test-pythonic-executable ()
   "Basic python executable."
@@ -32,6 +35,8 @@
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
 
+;;; Default directory.
+
 (ert-deftest test-pythonic-default-directory ()
   "Run processes in $HOME by default."
   (should (s-equals-p "~" (pythonic-default-directory))))
@@ -51,6 +56,8 @@
   "Virtual environment `default-directory' on the remote host."
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/localhost:~" (pythonic-default-directory)))))
+
+;;; Call process.
 
 (ert-deftest test-call-pythonic ()
   "Run synchronous python process."
@@ -74,6 +81,8 @@
                                   :buffer "*out2*"
                                   :args '("-V"))))))
 
+;;; Start process.
+
 (ert-deftest test-start-pythonic-cwd ()
   "Run asynchronous python process with working directory specified."
   (let ((process (start-pythonic :process "out3"
@@ -85,6 +94,8 @@
     (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out3 finished\n")
                         (with-current-buffer "*out3*"
                           (buffer-string))))))
+
+;;; Activate/deactivate environment.
 
 (ert-deftest test-pythonic-activate ()
   "Activate virtual environment."
