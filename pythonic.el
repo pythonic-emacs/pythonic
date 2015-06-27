@@ -98,17 +98,19 @@ for running process."
            display
            (apply 'pythonic-args args))))
 
-(cl-defun start-pythonic (&key process buffer args)
+(cl-defun start-pythonic (&key process buffer args cwd)
   "Pythonic wrapper around `start-process'.
 
 PROCESS is a name of the created process. BUFFER is a output
 destination. ARGS are the list of args passed to
-`start-process'."
-  (apply 'start-file-process
-         process
-         buffer
-         (pythonic-command)
-         (apply 'pythonic-args args)))
+`start-process'. CWD will be working directory for running
+process."
+  (let ((default-directory (pythonic-default-directory cwd)))
+    (apply 'start-file-process
+           process
+           buffer
+           (pythonic-command)
+           (apply 'pythonic-args args))))
 
 ;;;###autoload
 (defun pythonic-activate (virtualenv)

@@ -105,9 +105,21 @@
   "Check we can run asynchronous python process."
   (should (equal '("python" "-V")
                  (process-command
-                  (start-pythonic :process "out"
-                                  :buffer "*out*"
+                  (start-pythonic :process "out2"
+                                  :buffer "*out2*"
                                   :args '("-V"))))))
+
+(ert-deftest test-start-pythonic-cwd ()
+  "Run asynchronous python process with working directory specified."
+  (let ((process (start-pythonic :process "out3"
+                                 :buffer "*out3*"
+                                 :cwd "~"
+                                 :args '("-c" "import os; print(os.getcwd())"))))
+    (while (process-live-p process)
+      (accept-process-output process))
+    (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out3 finished\n")
+                        (with-current-buffer "*out3*"
+                          (buffer-string))))))
 
 
 ;;; Activate and deactivate virtual environment.
