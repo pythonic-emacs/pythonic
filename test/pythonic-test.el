@@ -7,88 +7,47 @@
 (require 'ert)
 (require 'pythonic)
 
-
 ;;; Defaults.
 
-(ert-deftest test-pythonic-command ()
-  "Check basic python command."
-  (should (s-equals-p "python" (pythonic-command))))
+(ert-deftest test-pythonic-executable ()
+  "Basic python executable."
+  (should (s-equals-p "python" (pythonic-executable))))
 
-(ert-deftest test-pythonic-args ()
-  "Check basic python args."
-  (should (equal '("-V") (pythonic-args "-V"))))
-
-;;; TODO: /ssh:root@localhost#46/path/to/env
-;;; TODO: /ssh:root@localhost#46/path/to/env and
-;;; `tramp-default-method' doesn't set to ssh, plink, scp, pscp.
-;;; TODO: `tramp-default-user' and `tramp-default-host' when
-;;; /ssh::/path/to/env was specified.
-
-
 ;;; Interpreter.
 
-(ert-deftest test-pythonic-command-interpreter ()
-  "Check interpreter python command on the local host."
+(ert-deftest test-pythonic-executable-interpreter ()
+  "Interpreter python executable on the local host."
   (let ((python-shell-interpreter "/path/to/the/python"))
-    (should (s-equals-p "/path/to/the/python" (pythonic-command)))))
+    (should (s-equals-p "/path/to/the/python" (pythonic-executable)))))
 
-(ert-deftest test-pythonic-args-interpreter-remote ()
-  "Check interpreter python args on the remote host."
-  (let ((python-shell-interpreter "/localhost:/vagrant/env/bin/python"))
-    (should (equal '("/vagrant/env/bin/python" "-V")
-                   (pythonic-args "-V")))))
-
-
 ;;; Process environment.
 
-
 ;;; PYTHONPATH.
 
-(ert-deftest test-pythonic-args-extra-pythonpaths ()
-  "Check PYTHONPATH on the remote host."
-  (let ((python-shell-interpreter "/localhost:python")
-        (python-shell-extra-pythonpaths '("/home/me/one" "/home/me/two")))
-    (should (equal '("env" "PYTHONPATH=/home/me/one:/home/me/two" "python" "-V")
-                   (pythonic-args "-V")))))
-
-
 ;;; Exec path.
 
-
 ;;; Virtual environment.
 
-(ert-deftest test-pythonic-command-virtualenv ()
-  "Check virtual env python command."
+(ert-deftest test-pythonic-executable-virtualenv ()
+  "Virtual environment python executable."
   (let ((python-shell-virtualenv-path "/home/me/env"))
-    (should (s-equals-p "/home/me/env/bin/python" (pythonic-command)))))
+    (should (s-equals-p "/home/me/env/bin/python" (pythonic-executable)))))
 
-(ert-deftest test-pythonic-command-virtualenv-windows ()
-  "Check virtual env python command on the windows platform."
+(ert-deftest test-pythonic-executable-virtualenv-windows ()
+  "Virtual environment python executable on the windows platform."
   (let ((system-type 'windows-nt)
         (python-shell-virtualenv-path "C:/env"))
-    (should (s-equals-p "C:/env/Scripts/pythonw" (pythonic-command)))))
+    (should (s-equals-p "C:/env/Scripts/pythonw" (pythonic-executable)))))
 
-(ert-deftest test-pythonic-command-virtualenv-remote ()
-  "Check virtual env python command on the remote host."
+(ert-deftest test-pythonic-executable-virtualenv-remote ()
+  "Virtual environment python executable on the remote host."
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
-    (should (s-equals-p "ssh" (pythonic-command)))))
+    (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
 
-(ert-deftest test-pythonic-command-interpreter-remote ()
-  "Check interpreter python command on the remote host."
-  (let ((python-shell-interpreter "/localhost:/vagrant/env/bin/python"))
-    (should (s-equals-p "ssh" (pythonic-command)))))
-
-(ert-deftest test-pythonic-args-virtualenv-remote ()
-  "Check virtual env python args on the remote host."
-  (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
-    (should (equal '("/vagrant/env/bin/python" "-V")
-                   (pythonic-args "-V")))))
-
-
 ;;; Processes.
 
 (ert-deftest test-call-pythonic ()
-  "Check we can run synchronous python process."
+  "Run synchronous python process."
   (should (eq 0 (call-pythonic :buffer "*out*"
                                :args '("-V")))))
 
@@ -102,7 +61,7 @@
                         (buffer-string)))))
 
 (ert-deftest test-start-pythonic ()
-  "Check we can run asynchronous python process."
+  "Run asynchronous python process."
   (should (equal '("python" "-V")
                  (process-command
                   (start-pythonic :process "out2"
@@ -125,13 +84,13 @@
 ;;; Activate and deactivate virtual environment.
 
 (ert-deftest test-pythonic-activate ()
-  "Check we can activate virtual environment."
+  "Activate virtual environment."
   (let (python-shell-virtualenv-path)
     (pythonic-activate "/home/me/env")
     (should (s-equals-p python-shell-virtualenv-path "/home/me/env"))))
 
 (ert-deftest test-pythonic-deactivate ()
-  "Check we can deactivate virtual environment."
+  "Deactivate virtual environment."
   (let ((python-shell-virtualenv-path "/home/me/env"))
     (pythonic-deactivate)
     (should-not python-shell-virtualenv-path)))

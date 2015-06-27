@@ -31,7 +31,7 @@
 (require 'dash)
 (require 'f)
 
-(defvaralias 'pythonic-env
+(defvaralias 'pythonic-environment
   (if (boundp 'python-shell-virtualenv-root)
       'python-shell-virtualenv-root
     'python-shell-virtualenv-path)
@@ -39,8 +39,8 @@
 
 (defun pythonic-remote-p ()
   "Determine remote or local virtual environment."
-  (if pythonic-env
-      (tramp-tramp-file-p pythonic-env)
+  (if pythonic-environment
+      (tramp-tramp-file-p pythonic-environment)
     (tramp-tramp-file-p python-shell-interpreter)))
 
 (defun pythonic-file-name (file)
@@ -55,29 +55,9 @@
   (let* ((windowsp (eq system-type 'windows-nt))
          (python (if windowsp "pythonw" "python"))
          (bin (if windowsp "Scripts" "bin")))
-    (if pythonic-env
-        (f-join (pythonic-file-name pythonic-env) bin python)
+    (if pythonic-environment
+        (f-join (pythonic-file-name pythonic-environment) bin python)
       (pythonic-file-name python-shell-interpreter))))
-
-(defun pythonic-command ()
-  "Get command name to start python process."
-  (if (pythonic-remote-p)
-      "ssh"
-    (pythonic-executable)))
-
-(defun pythonic-args (&rest args)
-  "Get python process ARGS."
-  (if (pythonic-remote-p)
-      (let (remote-args)
-        (when python-shell-extra-pythonpaths
-          (add-to-list 'remote-args "env" t)
-          (add-to-list 'remote-args
-                       (format "PYTHONPATH=%s"
-                               (s-join ":" python-shell-extra-pythonpaths))
-                       t))
-        (add-to-list 'remote-args (pythonic-executable) t)
-        (append remote-args args))
-    args))
 
 (defun pythonic-default-directory (from-directory)
   "Generate `default-directory' FROM-DIRECTORY."
@@ -91,12 +71,7 @@ specifies to redisplay BUFFER on new output. ARGS is the list of
 arguments passed to `call-process'. CWD will be working directory
 for running process."
   (let ((default-directory (pythonic-default-directory cwd)))
-    (apply 'process-file
-           (pythonic-command)
-           file
-           buffer
-           display
-           (apply 'pythonic-args args))))
+    (apply 'process-file (pythonic-executable) file buffer display args)))
 
 (cl-defun start-pythonic (&key process buffer args cwd)
   "Pythonic wrapper around `start-process'.
@@ -106,23 +81,19 @@ destination. ARGS are the list of args passed to
 `start-process'. CWD will be working directory for running
 process."
   (let ((default-directory (pythonic-default-directory cwd)))
-    (apply 'start-file-process
-           process
-           buffer
-           (pythonic-command)
-           (apply 'pythonic-args args))))
+    (apply 'start-file-process process buffer (pythonic-executable) args)))
 
 ;;;###autoload
 (defun pythonic-activate (virtualenv)
   "Activate python VIRTUALENV."
   (interactive "DEnv: ")
-  (setq pythonic-env virtualenv))
+  (setq pythonic-environment virtualenv))
 
 ;;;###autoload
 (defun pythonic-deactivate ()
   "Deactivate python virtual environment."
   (interactive)
-  (setq pythonic-env nil))
+  (setq pythonic-environment nil))
 
 (provide 'pythonic)
 
