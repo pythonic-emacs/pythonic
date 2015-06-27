@@ -7,26 +7,14 @@
 (require 'ert)
 (require 'pythonic)
 
-;;; Defaults.
-
 (ert-deftest test-pythonic-executable ()
   "Basic python executable."
   (should (s-equals-p "python" (pythonic-executable))))
-
-;;; Interpreter.
 
 (ert-deftest test-pythonic-executable-interpreter ()
   "Interpreter python executable on the local host."
   (let ((python-shell-interpreter "/path/to/the/python"))
     (should (s-equals-p "/path/to/the/python" (pythonic-executable)))))
-
-;;; Process environment.
-
-;;; PYTHONPATH.
-
-;;; Exec path.
-
-;;; Virtual environment.
 
 (ert-deftest test-pythonic-executable-virtualenv ()
   "Virtual environment python executable."
@@ -44,7 +32,17 @@
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
 
-;;; Processes.
+(ert-deftest test-pythonic-default-directory-interpreter-remote ()
+  "Default directory must point to the tramp address in the case
+  remote address was specified in the
+  `python-shell-interpreter'."
+  (let ((python-shell-interpreter "/localhost:/path/to/the/python"))
+    (should (s-equals-p "/localhost:~" (pythonic-default-directory)))))
+
+(ert-deftest test-pythonic-default-directory-virtualenv-remote ()
+  "Virtual environment `default-directory' on the remote host."
+  (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
+    (should (s-equals-p "/localhost:~" (pythonic-default-directory)))))
 
 (ert-deftest test-call-pythonic ()
   "Run synchronous python process."
@@ -79,9 +77,6 @@
     (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out3 finished\n")
                         (with-current-buffer "*out3*"
                           (buffer-string))))))
-
-
-;;; Activate and deactivate virtual environment.
 
 (ert-deftest test-pythonic-activate ()
   "Activate virtual environment."

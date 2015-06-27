@@ -26,6 +26,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'python)
 (require 'tramp)
 (require 'dash)
@@ -50,6 +51,14 @@
        (tramp-dissect-file-name file))
     file))
 
+(defun pythonic-tramp-connection ()
+  "Tramp connection string or nil."
+  (-when-let* ((vars (--filter (tramp-tramp-file-p it)
+                               (list pythonic-environment
+                                     python-shell-interpreter)))
+               (var (car vars)))
+    (substring var 0 (- (length var) (length (pythonic-file-name var))))))
+
 (defun pythonic-executable ()
   "Python executable."
   (let* ((windowsp (eq system-type 'windows-nt))
@@ -59,9 +68,9 @@
         (f-join (pythonic-file-name pythonic-environment) bin python)
       (pythonic-file-name python-shell-interpreter))))
 
-(defun pythonic-default-directory (from-directory)
+(defun pythonic-default-directory (&optional from-directory)
   "Generate `default-directory' FROM-DIRECTORY."
-  (or from-directory "~"))
+  (concat (pythonic-tramp-connection) (or from-directory "~")))
 
 (cl-defun call-pythonic (&key file buffer display args cwd)
   "Pythonic wrapper around `call-process'.
