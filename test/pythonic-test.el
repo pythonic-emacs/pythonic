@@ -15,8 +15,13 @@
   (should (s-equals-p "python" (pythonic-executable))))
 
 (ert-deftest test-pythonic-executable-interpreter ()
-  "Interpreter python executable on the local host."
+  "Python executable on the local host."
   (let ((python-shell-interpreter "/path/to/the/python"))
+    (should (s-equals-p "/path/to/the/python" (pythonic-executable)))))
+
+(ert-deftest test-pythonic-executable-interpreter-remote ()
+  "Python executable on the remote host."
+  (let ((python-shell-interpreter "/localhost:/path/to/the/python"))
     (should (s-equals-p "/path/to/the/python" (pythonic-executable)))))
 
 (ert-deftest test-pythonic-executable-virtualenv ()
@@ -24,16 +29,16 @@
   (let ((python-shell-virtualenv-path "/home/me/env"))
     (should (s-equals-p "/home/me/env/bin/python" (pythonic-executable)))))
 
+(ert-deftest test-pythonic-executable-virtualenv-remote ()
+  "Virtual environment python executable on the remote host."
+  (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
+    (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
+
 (ert-deftest test-pythonic-executable-virtualenv-windows ()
   "Virtual environment python executable on the windows platform."
   (let ((system-type 'windows-nt)
         (python-shell-virtualenv-path "C:/env"))
     (should (s-equals-p "C:/env/Scripts/pythonw" (pythonic-executable)))))
-
-(ert-deftest test-pythonic-executable-virtualenv-remote ()
-  "Virtual environment python executable on the remote host."
-  (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
-    (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
 
 ;;; Default directory.
 
