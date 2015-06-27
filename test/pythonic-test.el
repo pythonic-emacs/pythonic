@@ -78,6 +78,8 @@
                       (with-current-buffer "*out1*"
                         (buffer-string)))))
 
+;;; Start process.
+
 (ert-deftest test-start-pythonic ()
   "Run asynchronous python process."
   (should (equal '("python" "-V")
@@ -85,8 +87,6 @@
                   (start-pythonic :process "out2"
                                   :buffer "*out2*"
                                   :args '("-V"))))))
-
-;;; Start process.
 
 (ert-deftest test-start-pythonic-cwd ()
   "Run asynchronous python process with working directory specified."
@@ -98,6 +98,30 @@
       (accept-process-output process))
     (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out3 finished\n")
                         (with-current-buffer "*out3*"
+                          (buffer-string))))))
+
+(ert-deftest test-start-pythonic-extra-pythonpaths ()
+  "Asynchronous python process respect `python-shell-extra-pythonpaths'."
+  (let* ((python-shell-extra-pythonpaths '("/home/test/modules"))
+         (process (start-pythonic :process "out4"
+                                  :buffer "*out4*"
+                                  :args '("-c" "from __future__ import print_function; import os; print(os.getenv('PYTHONPATH'))"))))
+    (while (process-live-p process)
+      (accept-process-output process))
+    (should (s-equals-p "/home/test/modules\n\nProcess out4 finished\n"
+                        (with-current-buffer "*out4*"
+                          (buffer-string))))))
+
+(ert-deftest test-start-pythonic-process-environment ()
+  "Asynchronous python process respect `python-shell-process-environment'."
+  (let* ((python-shell-process-environment '("PING=PONG"))
+         (process (start-pythonic :process "out5"
+                                  :buffer "*out5*"
+                                  :args '("-c" "from __future__ import print_function; import os; print(os.getenv('PING'))"))))
+    (while (process-live-p process)
+      (accept-process-output process))
+    (should (s-equals-p "PONG\n\nProcess out5 finished\n"
+                        (with-current-buffer "*out5*"
                           (buffer-string))))))
 
 ;;; Activate/deactivate environment.

@@ -89,7 +89,8 @@ PROCESS is a name of the created process. BUFFER is a output
 destination. ARGS are the list of args passed to
 `start-process'. CWD will be working directory for running
 process."
-  (let ((default-directory (pythonic-default-directory cwd)))
+  (let ((default-directory (pythonic-default-directory cwd))
+        (process-environment (python-shell-calculate-process-environment)))
     (apply 'start-file-process process buffer (pythonic-executable) args)))
 
 ;;;###autoload
