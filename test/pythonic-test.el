@@ -32,6 +32,14 @@
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
 
+(ert-deftest test-pythonic-default-directory ()
+  "Run processes in $HOME by default."
+  (should (s-equals-p "~" (pythonic-default-directory))))
+
+(ert-deftest test-pythonic-default-directory-localhost ()
+  "Pass directory unmodified in clean environment."
+  (should (s-equals-p "/me" (pythonic-default-directory "/me"))))
+
 (ert-deftest test-pythonic-default-directory-interpreter-remote ()
   "Default directory must point to the tramp address in the case
   remote address was specified in the
