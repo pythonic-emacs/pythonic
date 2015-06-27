@@ -79,18 +79,24 @@
         (append remote-args args))
     args))
 
-(cl-defun call-pythonic (&key file buffer display args)
+(defun pythonic-default-directory (from-directory)
+  "Generate `default-directory' FROM-DIRECTORY."
+  (or from-directory "~"))
+
+(cl-defun call-pythonic (&key file buffer display args cwd)
   "Pythonic wrapper around `call-process'.
 
 FILE is the input file. BUFFER is the output destination. DISPLAY
 specifies to redisplay BUFFER on new output. ARGS is the list of
-arguments passed to `call-process'."
-  (apply 'process-file
-         (pythonic-command)
-         file
-         buffer
-         display
-         (apply 'pythonic-args args)))
+arguments passed to `call-process'. CWD will be working directory
+for running process."
+  (let ((default-directory (pythonic-default-directory cwd)))
+    (apply 'process-file
+           (pythonic-command)
+           file
+           buffer
+           display
+           (apply 'pythonic-args args))))
 
 (cl-defun start-pythonic (&key process buffer args)
   "Pythonic wrapper around `start-process'.

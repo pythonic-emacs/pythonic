@@ -92,6 +92,15 @@
   (should (eq 0 (call-pythonic :buffer "*out*"
                                :args '("-V")))))
 
+(ert-deftest test-call-pythonic-cwd ()
+  "Pass current working directory to the process."
+  (call-pythonic :buffer "*out1*"
+                 :cwd "~"
+                 :args '("-c" "import os; print(os.getcwd())"))
+  (should (s-equals-p (s-concat (expand-file-name "~") "\n")
+                      (with-current-buffer "*out1*"
+                        (buffer-string)))))
+
 (ert-deftest test-start-pythonic ()
   "Check we can run asynchronous python process."
   (should (equal '("python" "-V")
