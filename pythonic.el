@@ -79,7 +79,8 @@ FILE is the input file. BUFFER is the output destination. DISPLAY
 specifies to redisplay BUFFER on new output. ARGS is the list of
 arguments passed to `call-process'. CWD will be working directory
 for running process."
-  (let ((default-directory (pythonic-default-directory cwd)))
+  (let ((default-directory (pythonic-default-directory cwd))
+        (process-environment (python-shell-calculate-process-environment)))
     (apply 'process-file (pythonic-executable) file buffer display args)))
 
 (cl-defun start-pythonic (&key process buffer args cwd)

@@ -78,50 +78,69 @@
                       (with-current-buffer "*out1*"
                         (buffer-string)))))
 
+(ert-deftest test-call-pythonic-extra-pythonpaths ()
+  "Synchronous python process respect `python-shell-extra-pythonpaths'."
+  (let* ((python-shell-extra-pythonpaths '("/home/test/modules")))
+    (call-pythonic :buffer "*out2*"
+                   :args '("-c" "from __future__ import print_function; import os; print(os.getenv('PYTHONPATH'))"))
+    (should (s-equals-p "/home/test/modules\n"
+                        (with-current-buffer "*out2*"
+                          (buffer-string))))))
+
+(ert-deftest test-call-pythonic-process-environment ()
+  "Synchronous python process respect `python-shell-process-environment'."
+  (let* ((python-shell-process-environment '("PING=PONG"))
+         (process ))
+    (call-pythonic :buffer "*out3*"
+                   :args '("-c" "from __future__ import print_function; import os; print(os.getenv('PING'))"))
+    (should (s-equals-p "PONG\n"
+                        (with-current-buffer "*out3*"
+                          (buffer-string))))))
+
 ;;; Start process.
 
 (ert-deftest test-start-pythonic ()
   "Run asynchronous python process."
   (should (equal '("python" "-V")
                  (process-command
-                  (start-pythonic :process "out2"
-                                  :buffer "*out2*"
+                  (start-pythonic :process "out4"
+                                  :buffer "*out4*"
                                   :args '("-V"))))))
 
 (ert-deftest test-start-pythonic-cwd ()
   "Run asynchronous python process with working directory specified."
-  (let ((process (start-pythonic :process "out3"
-                                 :buffer "*out3*"
+  (let ((process (start-pythonic :process "out5"
+                                 :buffer "*out5*"
                                  :cwd "~"
                                  :args '("-c" "from __future__ import print_function; import os; print(os.getcwd())"))))
     (while (process-live-p process)
       (accept-process-output process))
-    (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out3 finished\n")
-                        (with-current-buffer "*out3*"
+    (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out5 finished\n")
+                        (with-current-buffer "*out5*"
                           (buffer-string))))))
 
 (ert-deftest test-start-pythonic-extra-pythonpaths ()
   "Asynchronous python process respect `python-shell-extra-pythonpaths'."
   (let* ((python-shell-extra-pythonpaths '("/home/test/modules"))
-         (process (start-pythonic :process "out4"
-                                  :buffer "*out4*"
+         (process (start-pythonic :process "out6"
+                                  :buffer "*out6*"
                                   :args '("-c" "from __future__ import print_function; import os; print(os.getenv('PYTHONPATH'))"))))
     (while (process-live-p process)
       (accept-process-output process))
-    (should (s-equals-p "/home/test/modules\n\nProcess out4 finished\n"
-                        (with-current-buffer "*out4*"
+    (should (s-equals-p "/home/test/modules\n\nProcess out6 finished\n"
+                        (with-current-buffer "*out6*"
                           (buffer-string))))))
 
 (ert-deftest test-start-pythonic-process-environment ()
   "Asynchronous python process respect `python-shell-process-environment'."
   (let* ((python-shell-process-environment '("PING=PONG"))
-         (process (start-pythonic :process "out5"
-                                  :buffer "*out5*"
+         (process (start-pythonic :process "out7"
+                                  :buffer "*out7*"
                                   :args '("-c" "from __future__ import print_function; import os; print(os.getenv('PING'))"))))
     (while (process-live-p process)
       (accept-process-output process))
-    (should (s-equals-p "PONG\n\nProcess out5 finished\n"
-                        (with-current-buffer "*out5*"
+    (should (s-equals-p "PONG\n\nProcess out7 finished\n"
+                        (with-current-buffer "*out7*"
                           (buffer-string))))))
 
 ;;; Activate/deactivate environment.
