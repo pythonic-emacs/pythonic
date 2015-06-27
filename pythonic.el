@@ -85,7 +85,7 @@
 FILE is the input file. BUFFER is the output destination. DISPLAY
 specifies to redisplay BUFFER on new output. ARGS is the list of
 arguments passed to `call-process'."
-  (apply 'call-process
+  (apply 'process-file
          (pythonic-command)
          file
          buffer
@@ -98,7 +98,7 @@ arguments passed to `call-process'."
 PROCESS is a name of the created process. BUFFER is a output
 destination. ARGS are the list of args passed to
 `start-process'."
-  (apply 'start-process
+  (apply 'start-file-process
          process
          buffer
          (pythonic-command)
