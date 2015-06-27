@@ -96,7 +96,7 @@
   "Pass current working directory to the process."
   (call-pythonic :buffer "*out1*"
                  :cwd "~"
-                 :args '("-c" "import os; print(os.getcwd())"))
+                 :args '("-c" "from __future__ import print_function; import os; print(os.getcwd())"))
   (should (s-equals-p (s-concat (expand-file-name "~") "\n")
                       (with-current-buffer "*out1*"
                         (buffer-string)))))
@@ -114,7 +114,7 @@
   (let ((process (start-pythonic :process "out3"
                                  :buffer "*out3*"
                                  :cwd "~"
-                                 :args '("-c" "import os; print(os.getcwd())"))))
+                                 :args '("-c" "from __future__ import print_function; import os; print(os.getcwd())"))))
     (while (process-live-p process)
       (accept-process-output process))
     (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out3 finished\n")
