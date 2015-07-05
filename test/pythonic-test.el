@@ -6,7 +6,6 @@
 
 (require 'ert)
 (require 'pythonic)
-(require 's)
 
 ;;; Executable.
 
@@ -62,6 +61,127 @@
   (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
     (should (s-equals-p "/localhost:~" (pythonic-default-directory)))))
 
+;;; Set PYTHONPATH variable.
+
+(ert-deftest test-pythonic-set-pythonpath-variable ()
+  "Set PYTHONPATH according to the `python-shell-extra-pythonpaths' variable."
+  (let (process-environment
+        (python-shell-extra-pythonpaths '("/home/test/modules")))
+    (pythonic-set-pythonpath-variable)
+    (should (equal process-environment
+                   '("PYTHONPATH=/home/test/modules")))))
+
+(ert-deftest test-pythonic-set-pythonpath-variable-exists ()
+  "Set PYTHONPATH according to the `python-shell-extra-pythonpaths' variable.
+Respect existing PYTHONPATH."
+  (let ((process-environment '("PYTHONPATH=/home/me/modules"))
+        (python-shell-extra-pythonpaths '("/home/test/modules")))
+    (pythonic-set-pythonpath-variable)
+    (should (equal process-environment
+                   '("PYTHONPATH=/home/test/modules:/home/me/modules")))))
+
+(ert-deftest test-pythonic-set-pythonpath-variable-few-calls ()
+  "Set PYTHONPATH doesn't double entries in the variable on
+successively calls."
+  (let (process-environment
+        (python-shell-extra-pythonpaths '("/home/test/modules")))
+    (pythonic-set-pythonpath-variable)
+    (pythonic-set-pythonpath-variable)
+    (should (equal process-environment
+                   '("PYTHONPATH=/home/test/modules")))))
+
+(ert-deftest test-pythonic-set-pythonpath-variable-tramp ()
+  "Set PYTHONPATH according to the
+`python-shell-extra-pythonpaths' variable on remote host."
+  (unwind-protect
+      (let ((python-shell-extra-pythonpaths '("/home/test/modules"))
+            (python-shell-interpreter "/ssh:test@localhost:/usr/bin/python"))
+        (pythonic-set-pythonpath-variable-tramp)
+        (tramp-send-command ["ssh" "test" "localhost" "" nil] "echo $PYTHONPATH")
+        (should (equal "/home/test/modules\n"
+                       (with-current-buffer "*tramp/ssh test@localhost*"
+                         (buffer-string)))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)))
+
+(ert-deftest test-pythonic-set-pythonpath-variable-tramp-exists ()
+  "Set PYTHONPATH according to the
+`python-shell-extra-pythonpaths' variable on remote host.
+Respect existing PYTHONPATH on the remote host."
+  (unwind-protect
+      (let ((python-shell-extra-pythonpaths '("/home/test/modules"))
+            (python-shell-interpreter "/ssh:test@localhost:/usr/bin/python"))
+        (tramp-send-command ["ssh" "test" "localhost" "" nil]
+                            "export PYTHONPATH=/home/me/modules")
+        (pythonic-set-pythonpath-variable-tramp)
+        (tramp-send-command ["ssh" "test" "localhost" "" nil] "echo $PYTHONPATH")
+        (should (equal "/home/test/modules:/home/me/modules\n"
+                       (with-current-buffer "*tramp/ssh test@localhost*"
+                         (buffer-string)))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)))
+
+(ert-deftest test-pythonic-set-pythonpath-variable-tramp-few-calls ()
+  "Set PYTHONPATH doesn't double entries in the variable on
+successively calls on the remote host."
+  (unwind-protect
+      (let ((python-shell-extra-pythonpaths '("/home/test/modules"))
+            (python-shell-interpreter "/ssh:test@localhost:/usr/bin/python"))
+        (pythonic-set-pythonpath-variable-tramp)
+        (pythonic-set-pythonpath-variable-tramp)
+        (tramp-send-command ["ssh" "test" "localhost" "" nil] "echo $PYTHONPATH")
+        (should (equal "/home/test/modules\n"
+                       (with-current-buffer "*tramp/ssh test@localhost*"
+                         (buffer-string)))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)))
+
+;;; PATH variable.
+
+(ert-deftest test-pythonic-set-path-variable ()
+  "Set PATH variable from `python-shell-exec-path'."
+  (let (process-environment
+        (python-shell-exec-path '("/home/test/bin")))
+    (pythonic-set-path-variable)
+    (should (equal '("PATH=/home/test/bin")
+                   process-environment))))
+
+(ert-deftest test-pythonic-set-path-variable-tramp ()
+  "Set PATH variable from `python-shell-exec-path' on remote host."
+  (unwind-protect
+      (let ((python-shell-exec-path '("/home/test/bin"))
+            (python-shell-interpreter "/ssh:test@localhost:/usr/bin/python"))
+        (pythonic-set-path-variable-tramp)
+        (tramp-send-command ["ssh" "test" "localhost" "" nil] "echo $PATH")
+        (should (s-starts-with-p "/home/test/bin:"
+                                 (with-current-buffer "*tramp/ssh test@localhost*"
+                                   (buffer-string)))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)))
+
+;;; Extra variables.
+
+(ert-deftest test-pythonic-set-extra-variables ()
+  "Set environment from `python-shell-process-environment'."
+  (let (process-environment
+        (python-shell-process-environment '("PING=PONG")))
+    (pythonic-set-extra-variables)
+    (should (equal process-environment '("PING=PONG")))))
+
+(ert-deftest test-pythonic-set-extra-variables-tramp ()
+  "Set environment form `python-shell-process-environment' on
+remote host."
+  (unwind-protect
+      (let ((python-shell-process-environment '("PING=PONG"))
+            (python-shell-interpreter "/ssh:test@localhost:/usr/bin/python"))
+        (pythonic-set-extra-variables-tramp)
+        (tramp-send-command ["ssh" "test" "localhost" "" nil] "echo $PING")
+        (should (equal "PONG\n"
+                       (with-current-buffer "*tramp/ssh test@localhost*"
+                         (buffer-string)))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)))
+
 ;;; Call process.
 
 (ert-deftest test-call-pythonic ()
@@ -89,8 +209,7 @@
 
 (ert-deftest test-call-pythonic-process-environment ()
   "Synchronous python process respect `python-shell-process-environment'."
-  (let* ((python-shell-process-environment '("PING=PONG"))
-         (process ))
+  (let ((python-shell-process-environment '("PING=PONG")))
     (call-pythonic :buffer "*out3*"
                    :args '("-c" "from __future__ import print_function; import os; print(os.getenv('PING'))"))
     (should (s-equals-p "PONG\n"
