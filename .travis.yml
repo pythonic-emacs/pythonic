@@ -1,5 +1,9 @@
 language: emacs-lisp
 
+env:
+  global:
+    - PATH=$HOME/.evm/bin:$HOME/.cask/bin:$PATH
+
 before_install:
   - sudo apt-add-repository -y ppa:ansible/ansible
   - sudo apt-get update
