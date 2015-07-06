@@ -1,7 +1,7 @@
-- name: setup pythonic test environment
-  hosts: localhost
+- hosts: localhost
   tasks:
     - name: create test user
+      become: yes
       user: name={{ item }}
       with_items:
         - test
