@@ -1,2 +1,4 @@
 - name: authorize generated ssh key for test user
   authorized_key: user=test key="{{ lookup('file', '/home/travis/.ssh/id_rsa.pub') }}"
+  become: yes
+  become_user: test
