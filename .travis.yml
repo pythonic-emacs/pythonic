@@ -10,7 +10,7 @@ before_install:
   - sudo apt-get install -y ansible
 
 install:
-  - ansible-playbook -i inventory/local playbook.yml
+  - ansible-playbook -i inventories/local playbook.yml
 
 script:
   - cask exec ert-runner
