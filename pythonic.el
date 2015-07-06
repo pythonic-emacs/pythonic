@@ -150,7 +150,8 @@ FILE is the input file. BUFFER is the output destination. DISPLAY
 specifies to redisplay BUFFER on new output. ARGS is the list of
 arguments passed to `call-process'. CWD will be working directory
 for running process."
-  (let ((default-directory (pythonic-default-directory cwd)))
+  (let ((default-directory (pythonic-default-directory cwd))
+        (process-environment (copy-sequence process-environment)))
     (pythonic-set-process-environment)
     (apply 'process-file (pythonic-executable) file buffer display args)))
 
@@ -161,7 +162,8 @@ PROCESS is a name of the created process. BUFFER is a output
 destination. ARGS are the list of args passed to
 `start-process'. CWD will be working directory for running
 process."
-  (let ((default-directory (pythonic-default-directory cwd)))
+  (let ((default-directory (pythonic-default-directory cwd))
+        (process-environment (copy-sequence process-environment)))
     (pythonic-set-process-environment)
     (apply 'start-file-process process buffer (pythonic-executable) args)))
 

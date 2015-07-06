@@ -216,6 +216,12 @@ remote host."
                         (with-current-buffer "*out3*"
                           (buffer-string))))))
 
+(ert-deftest test-call-pythonic-protect-process-environment ()
+  "Synchronous python process doesn't affect global `process-environment'."
+  (let ((python-shell-process-environment '("PING=PONG")))
+    (call-pythonic :buffer (generate-new-buffer-name "*out*") :args '("-V"))
+    (should-not (getenv "PING"))))
+
 ;;; Start process.
 
 (ert-deftest test-start-pythonic ()
@@ -261,6 +267,12 @@ remote host."
     (should (s-equals-p "PONG\n\nProcess out7 finished\n"
                         (with-current-buffer "*out7*"
                           (buffer-string))))))
+
+(ert-deftest test-start-pythonic-protect-process-environment ()
+  "Asynchronous python process doesn't affect global `process-environment'."
+  (let ((python-shell-process-environment '("PING=PONG")))
+    (start-pythonic :process "out" :buffer (generate-new-buffer-name "*out*") :args '("-V"))
+    (should-not (getenv "PING"))))
 
 ;;; Activate/deactivate environment.
 
