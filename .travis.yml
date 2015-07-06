@@ -4,9 +4,9 @@ env:
   global:
     - PATH=$HOME/.evm/bin:$HOME/.cask/bin:$PATH
   matrix:
-    - EMACS=emacs-24.3-bin
-    - EMACS=emacs-24.4-bin
-    - EMACS=emacs-24.5-bin
+    - EMACS_VERSION=emacs-24.3-bin
+    - EMACS_VERSION=emacs-24.4-bin
+    - EMACS_VERSION=emacs-24.5-bin
 
 before_install:
   - sudo apt-add-repository -y ppa:ansible/ansible
