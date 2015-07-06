@@ -1,0 +1,8 @@
+- name: install evm
+  git: repo=https://github.com/rejeep/evm dest=~/.evm
+- name: install emacs
+  command: evm install {{ item }}
+  with_items:
+    - emacs-24.3-bin
+    - emacs-24.4-bin
+    - emacs-24.5-bin
