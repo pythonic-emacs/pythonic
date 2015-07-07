@@ -17,4 +17,5 @@ install:
   - ansible-playbook -i inventories/local playbook.yml
 
 script:
+  - ssh test@localhost echo 1
   - cask exec ert-runner
