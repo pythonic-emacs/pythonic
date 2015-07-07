@@ -155,7 +155,7 @@ for running process."
     (pythonic-set-process-environment)
     (apply 'process-file (pythonic-executable) file buffer display args)))
 
-(cl-defun start-pythonic (&key process buffer args cwd filter sentinel)
+(cl-defun start-pythonic (&key process buffer args cwd filter sentinel (query-on-exit t))
   "Pythonic wrapper around `start-process'.
 
 PROCESS is a name of the created process. BUFFER is a output
@@ -163,7 +163,8 @@ destination. ARGS are the list of args passed to
 `start-process'. CWD will be working directory for running
 process.  FILTER must be a symbol of process filter function if
 necessary.  SENTINEL must be a symbol of process sentinel
-function if necessary."
+function if necessary.  QUERY-ON-EXIT will be corresponding
+process flag."
   (let ((default-directory (pythonic-default-directory cwd))
         (process-environment (copy-sequence process-environment)))
     (pythonic-set-process-environment)
@@ -172,6 +173,7 @@ function if necessary."
         (set-process-filter process filter))
       (when sentinel
         (set-process-sentinel process sentinel))
+      (set-process-query-on-exit-flag process query-on-exit)
       process)))
 
 ;;;###autoload

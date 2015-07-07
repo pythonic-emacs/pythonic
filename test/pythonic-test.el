@@ -286,6 +286,11 @@ remote host."
               (process-sentinel
                (start-pythonic :process "out" :args '("-V") :sentinel 'empty)))))
 
+(ert-deftest test-start-pythonic-query-on-exit ()
+  "Set query on exit flag for asynchronous python process."
+  (should (process-query-on-exit-flag
+           (start-pythonic :process "out" :args '("-V") :query-on-exit t))))
+
 ;;; Activate/deactivate environment.
 
 (ert-deftest test-pythonic-activate ()
