@@ -274,6 +274,12 @@ remote host."
     (start-pythonic :process "out" :buffer (generate-new-buffer-name "*out*") :args '("-V"))
     (should-not (getenv "PING"))))
 
+(ert-deftest test-start-pythonic-filter ()
+  "Set filter function for asynchronous process."
+  (should (eq 'empty-filter
+              (process-filter
+               (start-pythonic :process "out" :args '("-V") :filter 'empty-filter)))))
+
 ;;; Activate/deactivate environment.
 
 (ert-deftest test-pythonic-activate ()
