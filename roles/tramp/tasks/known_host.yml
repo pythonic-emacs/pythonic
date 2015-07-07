@@ -1,2 +1,2 @@
 - name: add test user at localhost to the ssh known hosts
-  known_hosts: name=test@localhost
+  known_hosts: name=test@localhost key={{ ansible_env.HOME }}/.ssh/id_rsa.pub
