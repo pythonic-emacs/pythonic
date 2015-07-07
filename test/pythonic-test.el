@@ -275,10 +275,16 @@ remote host."
     (should-not (getenv "PING"))))
 
 (ert-deftest test-start-pythonic-filter ()
-  "Set filter function for asynchronous process."
-  (should (eq 'empty-filter
+  "Set filter function for asynchronous python process."
+  (should (eq 'empty
               (process-filter
-               (start-pythonic :process "out" :args '("-V") :filter 'empty-filter)))))
+               (start-pythonic :process "out" :args '("-V") :filter 'empty)))))
+
+(ert-deftest test-start-pythonic-sentinel ()
+  "Set sentinel function for asynchronous python process."
+  (should (eq 'empty
+              (process-sentinel
+               (start-pythonic :process "out" :args '("-V") :sentinel 'empty)))))
 
 ;;; Activate/deactivate environment.
 

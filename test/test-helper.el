@@ -12,9 +12,8 @@
 
 (undercover "*.el")
 
-(defun empty-filter (&rest ignored)
-  "Empty functions to use as process filter.
-All arguments will be IGNORED.")
+(defun empty (&rest ignored)
+  "Do nothing.  All arguments will be IGNORED.")
 
 (provide 'test-helper)
 
