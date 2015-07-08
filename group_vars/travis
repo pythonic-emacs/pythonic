@@ -1,2 +1,2 @@
 emacs_versions:
-  - {{ ansible_env.EMACS_VERSION }}
+  - "{{ ansible_env.EMACS_VERSION }}"
