@@ -2,8 +2,8 @@
 
 while true
 do
+    sleep 9m
     echo -n .
-    sleep 1m
 done &
 
 ansible-playbook -i inventories/travis playbook.yml
