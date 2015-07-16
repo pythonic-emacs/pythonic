@@ -1,3 +1,3 @@
-- include: git.yml
+- include: dependencies.yml
 - include: evm.yml
 - include: cask.yml

@@ -1,4 +1,8 @@
 - hosts: all
   roles:
     - tramp
+    - git
     - emacs
+- hosts: vagrant
+  roles:
+    - bashrc

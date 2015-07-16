@@ -1,4 +1,1 @@
-emacs_versions:
-  - emacs-24.3-bin
-  - emacs-24.4-bin
-  - emacs-24.5-bin
+project_root: /vagrant
