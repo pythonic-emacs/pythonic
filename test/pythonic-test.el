@@ -20,7 +20,7 @@
 
 (ert-deftest test-pythonic-executable-interpreter-remote ()
   "Python executable on the remote host."
-  (let ((python-shell-interpreter "/localhost:/path/to/the/python"))
+  (let ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python"))
     (should (s-equals-p "/path/to/the/python" (pythonic-executable)))))
 
 (ert-deftest test-pythonic-executable-virtualenv ()
@@ -30,7 +30,7 @@
 
 (ert-deftest test-pythonic-executable-virtualenv-remote ()
   "Virtual environment python executable on the remote host."
-  (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
+  (let ((python-shell-virtualenv-path "/ssh:test@localhost:/vagrant/env"))
     (should (s-equals-p "/vagrant/env/bin/python" (pythonic-executable)))))
 
 (ert-deftest test-pythonic-executable-virtualenv-windows ()
@@ -53,15 +53,23 @@
   "Default directory must point to the tramp address in the case
   remote address was specified in the
   `python-shell-interpreter'."
-  (let ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python"))
-    (should (s-equals-p "/ssh:test@localhost:/home/test/"
-                        (pythonic-default-directory)))))
+  (unwind-protect
+      (let ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python"))
+        (should (s-equals-p "/ssh:test@localhost:/home/test/"
+                            (pythonic-default-directory))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 (ert-deftest test-pythonic-default-directory-virtualenv-remote ()
   "Virtual environment `default-directory' on the remote host."
-  (let ((python-shell-virtualenv-path "/ssh:test@localhost:/vagrant/env"))
-    (should (s-equals-p "/ssh:test@localhost:/home/test/"
-                        (pythonic-default-directory)))))
+  (unwind-protect
+      (let ((python-shell-virtualenv-path "/ssh:test@localhost:/vagrant/env"))
+        (should (s-equals-p "/ssh:test@localhost:/home/test/"
+                            (pythonic-default-directory))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 ;;; Set PYTHONPATH variable.
 
@@ -104,7 +112,8 @@ successively calls."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)))
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 (ert-deftest test-pythonic-set-pythonpath-variable-tramp-exists ()
   "Set PYTHONPATH according to the
@@ -121,7 +130,8 @@ Respect existing PYTHONPATH on the remote host."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)))
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 (ert-deftest test-pythonic-set-pythonpath-variable-tramp-few-calls ()
   "Set PYTHONPATH doesn't double entries in the variable on
@@ -136,7 +146,8 @@ successively calls on the remote host."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)))
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 ;;; PATH variable.
 
@@ -159,7 +170,8 @@ successively calls on the remote host."
                                  (with-current-buffer "*tramp/ssh test@localhost*"
                                    (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)))
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 ;;; Extra variables.
 
@@ -182,7 +194,8 @@ remote host."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)))
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 ;;; Call process.
 
