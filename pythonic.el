@@ -72,7 +72,10 @@
 
 (defun pythonic-default-directory (&optional from-directory)
   "Generate `default-directory' FROM-DIRECTORY."
-  (concat (pythonic-tramp-connection) (or from-directory "~")))
+  (let ((default-directory
+          (concat (pythonic-tramp-connection)
+                  (or from-directory "~"))))
+    (f-full default-directory)))
 
 (defun pythonic-set-process-environment ()
   "Set process environment variables from `python-mode' settings.

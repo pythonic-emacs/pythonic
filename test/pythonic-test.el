@@ -43,7 +43,7 @@
 
 (ert-deftest test-pythonic-default-directory ()
   "Run processes in $HOME by default."
-  (should (s-equals-p "~" (pythonic-default-directory))))
+  (should (s-equals-p (f-full "~") (pythonic-default-directory))))
 
 (ert-deftest test-pythonic-default-directory-localhost ()
   "Pass directory unmodified in clean environment."
@@ -53,13 +53,15 @@
   "Default directory must point to the tramp address in the case
   remote address was specified in the
   `python-shell-interpreter'."
-  (let ((python-shell-interpreter "/localhost:/path/to/the/python"))
-    (should (s-equals-p "/localhost:~" (pythonic-default-directory)))))
+  (let ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python"))
+    (should (s-equals-p "/ssh:test@localhost:/home/test/"
+                        (pythonic-default-directory)))))
 
 (ert-deftest test-pythonic-default-directory-virtualenv-remote ()
   "Virtual environment `default-directory' on the remote host."
-  (let ((python-shell-virtualenv-path "/localhost:/vagrant/env"))
-    (should (s-equals-p "/localhost:~" (pythonic-default-directory)))))
+  (let ((python-shell-virtualenv-path "/ssh:test@localhost:/vagrant/env"))
+    (should (s-equals-p "/ssh:test@localhost:/home/test/"
+                        (pythonic-default-directory)))))
 
 ;;; Set PYTHONPATH variable.
 
@@ -194,7 +196,7 @@ remote host."
   (call-pythonic :buffer "*out1*"
                  :cwd "~"
                  :args '("-c" "from __future__ import print_function; import os; print(os.getcwd())"))
-  (should (s-equals-p (s-concat (expand-file-name "~") "\n")
+  (should (s-equals-p (s-concat (f-expand "~") "\n")
                       (with-current-buffer "*out1*"
                         (buffer-string)))))
 
@@ -240,7 +242,7 @@ remote host."
                                  :args '("-c" "from __future__ import print_function; import os; print(os.getcwd())"))))
     (while (process-live-p process)
       (accept-process-output process))
-    (should (s-equals-p (s-concat (expand-file-name "~") "\n\nProcess out5 finished\n")
+    (should (s-equals-p (s-concat (f-expand "~") "\n\nProcess out5 finished\n")
                         (with-current-buffer "*out5*"
                           (buffer-string))))))
 
@@ -312,7 +314,7 @@ remote host."
 (ert-deftest test-start-pythonic-default-directory-property ()
   "Set `pythonic-default-directory' result as `default-directory' process property."
   (let ((default-directorys "~"))
-    (should (equal "~"
+    (should (equal (f-full "~")
                    (process-get
                     (start-pythonic :process "out" :args '("-V"))
                     'default-directory)))))
