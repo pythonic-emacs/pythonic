@@ -1,4 +1,4 @@
-;;; pythonic.el --- Utility functions for writing pythonic emacs package.
+;;; pythonic.el --- Utility functions for writing pythonic emacs package.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015 by Artem Malyshev
 
