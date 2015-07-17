@@ -291,6 +291,40 @@ remote host."
   (should (process-query-on-exit-flag
            (start-pythonic :process "out" :args '("-V") :query-on-exit t))))
 
+(ert-deftest test-start-pythonic-path-property ()
+  "Set `python-shell-exec-path' as `path' process property."
+  (let ((python-shell-exec-path '("test"))
+        (process-environment '("PATH=/usr/bin")))
+    (should (equal "test:/usr/bin"
+                   (process-get
+                    (start-pythonic :process "out" :args '("-V"))
+                    'path)))))
+
+(ert-deftest test-start-pythonic-pythonpath-property ()
+  "Set `python-shell-extra-pythonpaths' as `pythonpath' process property."
+  (let ((python-shell-extra-pythonpaths '("test"))
+        (process-environment '("PYTHONPATH=/home/me")))
+    (should (equal "test:/home/me"
+                   (process-get
+                    (start-pythonic :process "out" :args '("-V"))
+                    'pythonpath)))))
+
+(ert-deftest test-start-pythonic-default-directory-property ()
+  "Set `pythonic-default-directory' result as `default-directory' process property."
+  (let ((default-directorys "~"))
+    (should (equal "~"
+                   (process-get
+                    (start-pythonic :process "out" :args '("-V"))
+                    'default-directory)))))
+
+(ert-deftest test-start-pythonic-environment-property ()
+  "Set `python-shell-process-environment' as `environment' process property."
+  (let ((python-shell-process-environment '("TEST=t")))
+    (should (equal '("TEST=t")
+                   (process-get
+                    (start-pythonic :process "out" :args '("-V"))
+                    'environment)))))
+
 ;;; Activate/deactivate environment.
 
 (ert-deftest test-pythonic-activate ()

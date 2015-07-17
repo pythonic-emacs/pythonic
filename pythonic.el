@@ -87,16 +87,18 @@ It will use `python-shell-exec-path' for PATH variable,
     (pythonic-set-path-variable)
     (pythonic-set-extra-variables)))
 
+(defun pythonic-get-pythonpath-variable ()
+  "Get PYTHONPATH variable from `python-shell-extra-pythonpaths' variable."
+  (s-join path-separator
+          (->> (or (getenv "PYTHONPATH") "")
+               (s-split path-separator)
+               (-union python-shell-extra-pythonpaths)
+               (-remove 's-blank?)
+               (-distinct))))
+
 (defun pythonic-set-pythonpath-variable ()
   "Set PYTHONPATH variable from `python-shell-extra-pythonpaths' variable."
-  (-let* ((pythonpath (or (getenv "PYTHONPATH") ""))
-          (pythonpaths (s-split path-separator pythonpath t))
-          (external-pythonpaths (--remove (member it python-shell-extra-pythonpaths)
-                                          pythonpaths))
-          (new-pythonpaths (append python-shell-extra-pythonpaths
-                                   external-pythonpaths))
-          (new-pythonpath (s-join path-separator new-pythonpaths)))
-    (setenv "PYTHONPATH" new-pythonpath)))
+  (setenv "PYTHONPATH" (pythonic-get-pythonpath-variable)))
 
 (defun pythonic-set-pythonpath-variable-tramp ()
   "Set PYTHONPATH variable from `python-shell-extra-pythonpaths' variable on remote host."
@@ -115,13 +117,18 @@ It will use `python-shell-exec-path' for PATH variable,
                    (--remove (member it python-shell-extra-pythonpaths) it)
                    (append python-shell-extra-pythonpaths it)))))))
 
+(defun pythonic-get-path-variable ()
+  "Get PATH variable according to `python-shell-exec-path'."
+  (s-join path-separator
+          (->> (or (getenv "PATH") "")
+               (s-split path-separator)
+               (-union python-shell-exec-path)
+               (-remove 's-blank?)
+               (-distinct))))
+
 (defun pythonic-set-path-variable ()
   "Set PATH according to `python-shell-exec-path'."
-  (setenv "PATH"
-          (s-join path-separator
-                  (-remove 'null
-                           (append python-shell-exec-path
-                                   (list (getenv "PATH")))))))
+  (setenv "PATH" (pythonic-get-path-variable)))
 
 (defun pythonic-set-path-variable-tramp ()
   "Set PATH according to `python-shell-exec-path' on remote host."
@@ -174,6 +181,10 @@ process flag."
       (when sentinel
         (set-process-sentinel process sentinel))
       (set-process-query-on-exit-flag process query-on-exit)
+      (process-put process 'default-directory default-directory)
+      (process-put process 'environment python-shell-process-environment)
+      (process-put process 'path (pythonic-get-path-variable))
+      (process-put process 'pythonpath (pythonic-get-pythonpath-variable))
       process)))
 
 ;;;###autoload
