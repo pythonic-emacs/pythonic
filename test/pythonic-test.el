@@ -308,8 +308,9 @@ remote host."
 
 (ert-deftest test-start-pythonic-path-property ()
   "Set `python-shell-exec-path' as `path' process property."
-  (let ((python-shell-exec-path '("test"))
-        (process-environment '("PATH=/usr/bin")))
+  (let* ((home (f-expand "~"))
+         (python-shell-exec-path '("test"))
+         (process-environment (list "PATH=/usr/bin" (concat "HOME" "=" home))))
     (should (equal "test:/usr/bin"
                    (process-get
                     (start-pythonic :process "out" :args '("-V"))
@@ -317,8 +318,9 @@ remote host."
 
 (ert-deftest test-start-pythonic-pythonpath-property ()
   "Set `python-shell-extra-pythonpaths' as `pythonpath' process property."
-  (let ((python-shell-extra-pythonpaths '("test"))
-        (process-environment '("PYTHONPATH=/home/me")))
+  (let* ((home (f-expand "~"))
+         (python-shell-extra-pythonpaths '("test"))
+         (process-environment (list "PYTHONPATH=/home/me" (concat "HOME" "=" home))))
     (should (equal "test:/home/me"
                    (process-get
                     (start-pythonic :process "out" :args '("-V"))
