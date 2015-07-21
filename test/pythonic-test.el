@@ -320,7 +320,6 @@ remote host."
   "Set `python-shell-exec-path' as `path' process property on remote process."
   (unwind-protect
       (let* ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python")
-             (home (f-expand "~"))
              (python-shell-exec-path '("/home/test/bin")))
         (should (equal "/home/test/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
                        (process-get
@@ -339,6 +338,22 @@ remote host."
                    (process-get
                     (start-pythonic :process "out" :args '("-V"))
                     'pythonpath)))))
+
+(ert-deftest test-start-pythonic-pythonpath-property-tramp ()
+  "Set `python-shell-extra-pythonpaths' as `pythonpath' process property on remote host.
+Respect remote PYTHONPATH value."
+  (unwind-protect
+      (let* ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python")
+             (python-shell-extra-pythonpaths '("/home/test/modules")))
+        (tramp-send-command ["ssh" "test" "localhost" "" nil]
+                            "export PYTHONPATH=/home/me/modules")
+        (should (equal "/home/test/modules:/home/me/modules"
+                       (process-get
+                        (start-pythonic :process "out" :args '("-V"))
+                        'pythonpath))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 (ert-deftest test-start-pythonic-default-directory-property ()
   "Set `pythonic-default-directory' result as `default-directory' process property."

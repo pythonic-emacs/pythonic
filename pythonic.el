@@ -90,6 +90,12 @@ It will use `python-shell-exec-path' for PATH variable,
     (pythonic-set-path-variable)
     (pythonic-set-extra-variables)))
 
+(defun pythonic-get-pythonpath ()
+  "Get appropriate PYTHONPATH variable for pythonic process."
+  (if (pythonic-remote-p)
+      (pythonic-get-pythonpath-variable-tramp)
+    (pythonic-get-pythonpath-variable)))
+
 (defun pythonic-get-pythonpath-variable ()
   "Get PYTHONPATH variable from `python-shell-extra-pythonpaths' variable."
   (s-join path-separator
@@ -99,26 +105,30 @@ It will use `python-shell-exec-path' for PATH variable,
                (-remove 's-blank?)
                (-distinct))))
 
+(defun pythonic-get-pythonpath-variable-tramp ()
+  "Get PYTHONPATH variable form `python-shell-extra-pythonpaths' on the remote host."
+  (let ((connection (tramp-dissect-file-name (pythonic-tramp-connection))))
+    (s-join path-separator
+            (--> (progn
+                   (tramp-send-command connection "echo $PYTHONPATH")
+                   (with-current-buffer (tramp-get-connection-buffer connection)
+                     (buffer-string)))
+                 (s-trim it)
+                 (s-split ":" it t)
+                 (--remove (member it python-shell-extra-pythonpaths) it)
+                 (append python-shell-extra-pythonpaths it)))))
+
 (defun pythonic-set-pythonpath-variable ()
   "Set PYTHONPATH variable from `python-shell-extra-pythonpaths' variable."
   (setenv "PYTHONPATH" (pythonic-get-pythonpath-variable)))
 
 (defun pythonic-set-pythonpath-variable-tramp ()
   "Set PYTHONPATH variable from `python-shell-extra-pythonpaths' variable on remote host."
-  (let ((connection (tramp-dissect-file-name (pythonic-tramp-connection))))
-    (tramp-send-command
-     connection
-     (format
-      "export PYTHONPATH=%s"
-      (s-join ":"
-              (--> (progn
-                     (tramp-send-command connection "echo $PYTHONPATH")
-                     (with-current-buffer (tramp-get-connection-buffer connection)
-                       (buffer-string)))
-                   (s-trim it)
-                   (s-split ":" it t)
-                   (--remove (member it python-shell-extra-pythonpaths) it)
-                   (append python-shell-extra-pythonpaths it)))))))
+  (tramp-send-command
+   (tramp-dissect-file-name (pythonic-tramp-connection))
+   (format
+    "export PYTHONPATH=%s"
+    (pythonic-get-pythonpath-variable-tramp))))
 
 (defun pythonic-get-path ()
   "Return appropriate PATH variable for pythonic process."
@@ -199,7 +209,7 @@ process flag."
       (process-put process 'default-directory default-directory)
       (process-put process 'environment python-shell-process-environment)
       (process-put process 'path (pythonic-get-path))
-      (process-put process 'pythonpath (pythonic-get-pythonpath-variable))
+      (process-put process 'pythonpath (pythonic-get-pythonpath))
       process)))
 
 ;;;###autoload
