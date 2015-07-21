@@ -316,6 +316,20 @@ remote host."
                     (start-pythonic :process "out" :args '("-V"))
                     'path)))))
 
+(ert-deftest test-start-pythonic-path-property-tramp ()
+  "Set `python-shell-exec-path' as `path' process property on remote process."
+  (unwind-protect
+      (let* ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python")
+             (home (f-expand "~"))
+             (python-shell-exec-path '("/home/test/bin")))
+        (should (equal "/home/test/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
+                       (process-get
+                        (start-pythonic :process "out" :args '("-V"))
+                        'path))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
+
 (ert-deftest test-start-pythonic-pythonpath-property ()
   "Set `python-shell-extra-pythonpaths' as `pythonpath' process property."
   (let* ((home (f-expand "~"))

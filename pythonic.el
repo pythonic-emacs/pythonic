@@ -120,6 +120,12 @@ It will use `python-shell-exec-path' for PATH variable,
                    (--remove (member it python-shell-extra-pythonpaths) it)
                    (append python-shell-extra-pythonpaths it)))))))
 
+(defun pythonic-get-path ()
+  "Return appropriate PATH variable for pythonic process."
+  (if (pythonic-remote-p)
+      (pythonic-get-path-variable-tramp)
+    (pythonic-get-path-variable)))
+
 (defun pythonic-get-path-variable ()
   "Get PATH variable according to `python-shell-exec-path'."
   (s-join path-separator
@@ -129,6 +135,12 @@ It will use `python-shell-exec-path' for PATH variable,
                (-remove 's-blank?)
                (-distinct))))
 
+(defun pythonic-get-path-variable-tramp ()
+  "Get PATH variable on remote host according to `python-shell-exec-path'."
+  (let* ((vec (tramp-dissect-file-name (pythonic-tramp-connection)))
+         (path (-distinct (append python-shell-exec-path (tramp-get-remote-path vec)))))
+    (s-join path-separator path)))
+
 (defun pythonic-set-path-variable ()
   "Set PATH according to `python-shell-exec-path'."
   (setenv "PATH" (pythonic-get-path-variable)))
@@ -136,7 +148,7 @@ It will use `python-shell-exec-path' for PATH variable,
 (defun pythonic-set-path-variable-tramp ()
   "Set PATH according to `python-shell-exec-path' on remote host."
   (let* ((vec (tramp-dissect-file-name (pythonic-tramp-connection)))
-         (path (append python-shell-exec-path (tramp-get-remote-path vec))))
+         (path (s-split path-separator (pythonic-get-path-variable-tramp))))
     (tramp-set-connection-property vec "remote-path" path)
     (tramp-set-remote-path vec)))
 
@@ -186,7 +198,7 @@ process flag."
       (set-process-query-on-exit-flag process query-on-exit)
       (process-put process 'default-directory default-directory)
       (process-put process 'environment python-shell-process-environment)
-      (process-put process 'path (pythonic-get-path-variable))
+      (process-put process 'path (pythonic-get-path))
       (process-put process 'pythonpath (pythonic-get-pythonpath-variable))
       process)))
 
