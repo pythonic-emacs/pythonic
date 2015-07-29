@@ -397,6 +397,12 @@ change since process was start."
   (let ((process (start-pythonic :process "out" :args '("-V"))))
     (should (pythonic-proper-environment-p process))))
 
+(ert-deftest test-pythonic-proper-environment-p-change-pythonpath ()
+  "`pythonic-proper-environment-p' is null if PYTHONPATH was changed."
+  (let* ((process (start-pythonic :process "out" :args '("-V")))
+         (python-shell-extra-pythonpaths '("/home/test/modules")))
+    (should-not (pythonic-proper-environment-p process))))
+
 ;;; Activate/deactivate environment.
 
 (ert-deftest test-pythonic-activate ()

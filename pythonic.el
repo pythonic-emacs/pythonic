@@ -217,8 +217,8 @@ process flag."
 
 (defun pythonic-proper-environment-p (process)
   "Determine if python environment has been changed since PROCESS was started."
-  (if (process-get process 'pythonic)
-      t
+  (--if-let (process-get process 'pythonic)
+      (equal (plist-get it :pythonpath) (pythonic-get-pythonpath))
     (error "Process %s wasn't started with `start-pythonic'"
            (process-name process))))
 
