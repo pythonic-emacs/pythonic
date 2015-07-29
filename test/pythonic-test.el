@@ -312,9 +312,11 @@ remote host."
          (python-shell-exec-path '("test"))
          (process-environment (list "PATH=/usr/bin" (concat "HOME" "=" home))))
     (should (equal "test:/usr/bin"
-                   (process-get
-                    (start-pythonic :process "out" :args '("-V"))
-                    'path)))))
+                   (plist-get
+                    (process-get
+                     (start-pythonic :process "out" :args '("-V"))
+                     'pythonic)
+                    :path)))))
 
 (ert-deftest test-start-pythonic-path-property-tramp ()
   "Set `python-shell-exec-path' as `path' process property on remote process."
@@ -322,9 +324,11 @@ remote host."
       (let* ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python")
              (python-shell-exec-path '("/home/test/bin")))
         (should (equal "/home/test/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
-                       (process-get
-                        (start-pythonic :process "out" :args '("-V"))
-                        'path))))
+                       (plist-get
+                        (process-get
+                         (start-pythonic :process "out" :args '("-V"))
+                         'pythonic)
+                        :path))))
     (kill-buffer "*tramp/ssh test@localhost*")
     (setq tramp-current-connection)
     (sleep-for 0.5)))
@@ -335,9 +339,11 @@ remote host."
          (python-shell-extra-pythonpaths '("test"))
          (process-environment (list "PYTHONPATH=/home/me" (concat "HOME" "=" home))))
     (should (equal "test:/home/me"
-                   (process-get
-                    (start-pythonic :process "out" :args '("-V"))
-                    'pythonpath)))))
+                   (plist-get
+                    (process-get
+                     (start-pythonic :process "out" :args '("-V"))
+                     'pythonic)
+                    :pythonpath)))))
 
 (ert-deftest test-start-pythonic-pythonpath-property-tramp ()
   "Set `python-shell-extra-pythonpaths' as `pythonpath' process property on remote host.
@@ -348,9 +354,11 @@ Respect remote PYTHONPATH value."
         (tramp-send-command ["ssh" "test" "localhost" "" nil]
                             "export PYTHONPATH=/home/me/modules")
         (should (equal "/home/test/modules:/home/me/modules"
-                       (process-get
-                        (start-pythonic :process "out" :args '("-V"))
-                        'pythonpath))))
+                       (plist-get
+                        (process-get
+                         (start-pythonic :process "out" :args '("-V"))
+                         'pythonic)
+                        :pythonpath))))
     (kill-buffer "*tramp/ssh test@localhost*")
     (setq tramp-current-connection)
     (sleep-for 0.5)))
@@ -359,17 +367,35 @@ Respect remote PYTHONPATH value."
   "Set `pythonic-default-directory' result as `default-directory' process property."
   (let ((default-directorys "~"))
     (should (equal (f-full "~")
-                   (process-get
-                    (start-pythonic :process "out" :args '("-V"))
-                    'default-directory)))))
+                   (plist-get
+                    (process-get
+                     (start-pythonic :process "out" :args '("-V"))
+                     'pythonic)
+                    :default-directory)))))
 
 (ert-deftest test-start-pythonic-environment-property ()
   "Set `python-shell-process-environment' as `environment' process property."
   (let ((python-shell-process-environment '("TEST=t")))
     (should (equal '("TEST=t")
-                   (process-get
-                    (start-pythonic :process "out" :args '("-V"))
-                    'environment)))))
+                   (plist-get
+                    (process-get
+                     (start-pythonic :process "out" :args '("-V"))
+                     'pythonic)
+                    :environment)))))
+
+;;; Up to date process environment.
+
+(ert-deftest test-pythonic-proper-environment-p-non-pythonic-process ()
+  "Applying `pythonic-proper-environment-p' to the process
+doesn't started with `start-pythonic' will cause error."
+  (let ((process (start-process "out" (generate-new-buffer-name "*out*") "python" "-V")))
+    (should-error (pythonic-proper-environment-p process))))
+
+(ert-deftest test-pythonic-proper-environment-p ()
+  "`pythonic-proper-environment-p' is true if environment doesn't
+change since process was start."
+  (let ((process (start-pythonic :process "out" :args '("-V"))))
+    (should (pythonic-proper-environment-p process))))
 
 ;;; Activate/deactivate environment.
 

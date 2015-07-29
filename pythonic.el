@@ -206,11 +206,21 @@ process flag."
       (when sentinel
         (set-process-sentinel process sentinel))
       (set-process-query-on-exit-flag process query-on-exit)
-      (process-put process 'default-directory default-directory)
-      (process-put process 'environment python-shell-process-environment)
-      (process-put process 'path (pythonic-get-path))
-      (process-put process 'pythonpath (pythonic-get-pythonpath))
+      (process-put process
+                   'pythonic
+                   (list
+                    :default-directory default-directory
+                    :environment python-shell-process-environment
+                    :path (pythonic-get-path)
+                    :pythonpath (pythonic-get-pythonpath)))
       process)))
+
+(defun pythonic-proper-environment-p (process)
+  "Determine if python environment has been changed since PROCESS was started."
+  (if (process-get process 'pythonic)
+      t
+    (error "Process %s wasn't started with `start-pythonic'"
+           (process-name process))))
 
 ;;;###autoload
 (defun pythonic-activate (virtualenv)
