@@ -59,6 +59,12 @@ specifies to redisplay BUFFER on new output.  ARGS is the list of
 arguments passed to ``call-process``.  CWD will be working directory
 for running process.
 
+.. code:: lisp
+
+    (call-pythonic :buffer "*Pythonic*"
+                   :args '("-V")
+                   :cwd "~")
+
 start-pythonic
 ~~~~~~~~~~~~~~
 
@@ -71,13 +77,35 @@ symbol of process filter function if necessary.  SENTINEL must be a
 symbol of process sentinel function if necessary.  QUERY-ON-EXIT will
 be corresponding process flag.
 
+.. code:: lisp
+
+    (start-pythonic :process "pythonic"
+                    :buffer "*Pythonic*"
+                    :args '("-c" "print('PING')")
+                    :cwd "~"
+                    :filter (lambda (process output) (message output))
+                    :sentinel (lambda (process event) (message "Done."))
+                    :query-on-exit nil)
+
+pythonic-proper-environment-p
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Determine if python environment has been changed since PROCESS was started.
+
+.. code:: lisp
+
+    (pythonic-proper-environment-p
+     (start-pythonic
+      :process "pythonic"
+      :args '("-V")))
+
 Commands
 --------
 
 pythonic-activate
 ~~~~~~~~~~~~~~~~~
 
-Activate python virtual environment.
+Activate python virtual environment.  Tramp paths are supported.
 
 pythonic-deactivate
 ~~~~~~~~~~~~~~~~~~~
