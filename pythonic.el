@@ -209,16 +209,17 @@ process flag."
       (process-put process
                    'pythonic
                    (list
-                    :default-directory default-directory
-                    :environment python-shell-process-environment
+                    :connection (pythonic-tramp-connection)
+                    :pythonpath (pythonic-get-pythonpath)
                     :path (pythonic-get-path)
-                    :pythonpath (pythonic-get-pythonpath)))
+                    :environment python-shell-process-environment))
       process)))
 
 (defun pythonic-proper-environment-p (process)
   "Determine if python environment has been changed since PROCESS was started."
   (--if-let (process-get process 'pythonic)
       (and
+       (equal (plist-get it :connection) (pythonic-tramp-connection))
        (equal (plist-get it :pythonpath) (pythonic-get-pythonpath))
        (equal (plist-get it :path) (pythonic-get-path))
        (equal (plist-get it :environment) python-shell-process-environment))

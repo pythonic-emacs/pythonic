@@ -365,15 +365,19 @@ Respect remote PYTHONPATH value."
     (setq tramp-current-connection)
     (sleep-for 0.5)))
 
-(ert-deftest test-start-pythonic-default-directory-property ()
-  "Set `pythonic-default-directory' result as `default-directory' process property."
-  (let ((default-directorys "~"))
-    (should (equal (f-full "~")
-                   (plist-get
-                    (process-get
-                     (start-pythonic :process "out" :args '("-V"))
-                     'pythonic)
-                    :default-directory)))))
+(ert-deftest test-start-pythonic-connection-property ()
+  "Set `pythonic-tramp-connection' result as `connection' process property."
+  (unwind-protect
+      (let ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python"))
+        (should (equal "/ssh:test@localhost:"
+                       (plist-get
+                        (process-get
+                         (start-pythonic :process "out" :args '("-V"))
+                         'pythonic)
+                        :connection))))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
 
 (ert-deftest test-start-pythonic-environment-property ()
   "Set `python-shell-process-environment' as `environment' process property."
@@ -414,6 +418,16 @@ change since process was start."
 `python-shell-process-environment' was changed."
   (let* ((process (start-pythonic :process "out" :args '("-V")))
          (python-shell-process-environment '("TEST=t")))
+    (should-not (pythonic-proper-environment-p process))))
+
+(ert-deftest test-pythonic-proper-environment-p-change-host ()
+  "`pythonic-proper-environment-p' is null if tramp host was changed."
+  ;; `unwind-protect' block is unnecessary here because non of tramp
+  ;; connection will be opened below.  First process starts locally,
+  ;; proper environment check will stop at connection strings
+  ;; comparison, non of remote PATH or PYTHONPATH checks will be made.
+  (let* ((process (start-pythonic :process "out" :args '("-V")))
+         (python-shell-interpreter "/ssh:test@localhost:/path/to/the/python"))
     (should-not (pythonic-proper-environment-p process))))
 
 ;;; Activate/deactivate environment.
