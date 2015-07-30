@@ -306,6 +306,8 @@ remote host."
   (should (process-query-on-exit-flag
            (start-pythonic :process "out" :args '("-V") :query-on-exit t))))
 
+;;; Proper process environment detection.
+
 (ert-deftest test-start-pythonic-path-property ()
   "Set `python-shell-exec-path' as `path' process property."
   (let* ((home (f-expand "~"))
@@ -383,8 +385,6 @@ Respect remote PYTHONPATH value."
                      'pythonic)
                     :environment)))))
 
-;;; Up to date process environment.
-
 (ert-deftest test-pythonic-proper-environment-p-non-pythonic-process ()
   "Applying `pythonic-proper-environment-p' to the process
 doesn't started with `start-pythonic' will cause error."
@@ -401,6 +401,12 @@ change since process was start."
   "`pythonic-proper-environment-p' is null if PYTHONPATH was changed."
   (let* ((process (start-pythonic :process "out" :args '("-V")))
          (python-shell-extra-pythonpaths '("/home/test/modules")))
+    (should-not (pythonic-proper-environment-p process))))
+
+(ert-deftest test-pythonic-proper-environment-p-change-path ()
+  "`pythonic-proper-environment-p' is null if PATH was changed."
+  (let* ((process (start-pythonic :process "out" :args '("-V")))
+         (python-shell-exec-path '("/home/test/bin")))
     (should-not (pythonic-proper-environment-p process))))
 
 ;;; Activate/deactivate environment.
