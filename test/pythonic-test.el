@@ -409,6 +409,13 @@ change since process was start."
          (python-shell-exec-path '("/home/test/bin")))
     (should-not (pythonic-proper-environment-p process))))
 
+(ert-deftest test-pythonic-proper-environment-p-change-environment ()
+  "`pythonic-proper-environment-p' is null if
+`python-shell-process-environment' was changed."
+  (let* ((process (start-pythonic :process "out" :args '("-V")))
+         (python-shell-process-environment '("TEST=t")))
+    (should-not (pythonic-proper-environment-p process))))
+
 ;;; Activate/deactivate environment.
 
 (ert-deftest test-pythonic-activate ()

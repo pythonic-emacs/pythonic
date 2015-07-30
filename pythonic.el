@@ -220,7 +220,8 @@ process flag."
   (--if-let (process-get process 'pythonic)
       (and
        (equal (plist-get it :pythonpath) (pythonic-get-pythonpath))
-       (equal (plist-get it :path) (pythonic-get-path)))
+       (equal (plist-get it :path) (pythonic-get-path))
+       (equal (plist-get it :environment) python-shell-process-environment))
     (error "Process %s wasn't started with `start-pythonic'"
            (process-name process))))
 
