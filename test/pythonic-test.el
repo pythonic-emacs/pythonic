@@ -420,6 +420,12 @@ change since process was start."
          (python-shell-process-environment '("TEST=t")))
     (should-not (pythonic-proper-environment-p process))))
 
+(ert-deftest test-pythonic-proper-environment-p-change-interpreter ()
+  "`pythonic-proper-environment-p' is null if interpreter path was changed."
+  (let* ((process (start-pythonic :process "out" :args '("-V")))
+         (python-shell-interpreter "/path/to/the/python"))
+    (should-not (pythonic-proper-environment-p process))))
+
 (ert-deftest test-pythonic-proper-environment-p-change-host ()
   "`pythonic-proper-environment-p' is null if tramp host was changed."
   ;; `unwind-protect' block is unnecessary here because non of tramp

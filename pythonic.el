@@ -219,6 +219,7 @@ process flag."
   "Determine if python environment has been changed since PROCESS was started."
   (--if-let (process-get process 'pythonic)
       (and
+       (equal (car (process-command process)) (pythonic-executable))
        (equal (plist-get it :connection) (pythonic-tramp-connection))
        (equal (plist-get it :pythonpath) (pythonic-get-pythonpath))
        (equal (plist-get it :path) (pythonic-get-path))
