@@ -1,10 +1,5 @@
 Vagrant.configure(2) do |config|
-  config.vm.box = "ubuntu/trusty32"
+  config.vm.box = "hashicorp/precise32"
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "playbook.yml"
-    ansible.groups = {
-      "vagrant" => ["default"],
-    }
-  end
+  config.vm.provision "shell", path: "scripts/deploy.sh"
 end
