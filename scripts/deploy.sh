@@ -27,4 +27,20 @@ apt-get update
 
 # Install Emacs build dependencies.
 
-apt-get install -y libncurses-dev libxpm-dev libxaw7-dev libtiff4-dev libpng-dev libgif-dev autoconf automake texinfo
+apt-get install -y libncurses-dev libxpm-dev libxaw7-dev \
+                   libtiff4-dev libpng-dev libgif-dev autoconf \
+                   automake texinfo curl
+
+# Build Emacs.
+
+EMACS_DIRECTORY=/usr/local/emacs
+EMACS_SRC=$EMACS_DIRECTORY/src
+EMACS_VERSIONS=(emacs-24.3 emacs-24.4 emacs-24.5)
+
+mkdir -p $EMACS_DIRECTORY $EMACS_SRC
+
+for version in ${EMACS_VERSIONS[@]}
+do
+    arch=$EMACS_SRC/$version
+    curl http://ftp.gnu.org/gnu/emacs/${version}.tar.xz -o $arch -z $arch -s
+done
