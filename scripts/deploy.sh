@@ -20,3 +20,11 @@ sudo -u $HOST_USER ssh-keyscan -H localhost > $HOST_HOME/.ssh/known_hosts
 
 sudo -u $TRAMP_USER mkdir -p $TRAMP_HOME/.ssh
 sudo -u $HOST_USER cat $HOST_HOME/.ssh/id_rsa.pub | sudo -u $TRAMP_USER cat > $TRAMP_HOME/.ssh/authorized_keys
+
+# Update mirrors list.
+
+apt-get update
+
+# Install Emacs build dependencies.
+
+apt-get install -y libncurses-dev libxpm-dev libxaw7-dev libtiff4-dev libpng-dev libgif-dev autoconf automake texinfo
