@@ -74,3 +74,7 @@ do
     EMACS=$VERSION cask install
     EMACS=$VERSION cask update
 done
+
+# Copy bashrc.
+
+cp $PROJECT_ROOT/scripts/bashrc $HOME/.bashrc
