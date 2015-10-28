@@ -29,7 +29,7 @@ sudo apt-get update
 
 sudo apt-get install -y libncurses-dev libxpm-dev libxaw7-dev \
                         libtiff4-dev libpng-dev libgif-dev autoconf \
-                        automake texinfo make
+                        automake texinfo make git
 
 # Build Emacs.
 
@@ -51,4 +51,26 @@ do
     make
     make install
     rm $PREFIX/bin/emacs
+done
+
+# Install cask.
+
+CASK_DIR=$HOME/.cask
+
+if [ -d $CASK_DIR ]
+then
+    cd $CASK_DIR
+    git pull
+else
+    git clone https://github.com/cask/cask $CASK_DIR
+fi
+
+cd $PROJECT_ROOT
+
+export PATH=$PATH:$HOME/.cask/bin:$EMACS_DIR/emacs-24.3/bin:$EMACS_DIR/emacs-24.4/bin:$EMACS_DIR/emacs-24.5/bin
+
+for VERSION in ${EMACS_VERSIONS[@]}
+do
+    EMACS=$VERSION cask install
+    EMACS=$VERSION cask update
 done
