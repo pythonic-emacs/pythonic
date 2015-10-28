@@ -50,4 +50,5 @@ do
     ./configure --prefix=$PREFIX
     make
     make install
+    rm $PREFIX/bin/emacs
 done
