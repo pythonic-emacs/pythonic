@@ -1,21 +1,13 @@
 language: emacs-lisp
 cache:
   directories:
-    - $HOME/.cache/pip
-    - $HOME/.pyenv
-    - $HOME/.evm
+    - $HOME/.emacs
     - $HOME/.cask
     - $TRAVIS_BUILD_DIR/.cask
-    - $TRAVIS_BUILD_DIR/.tox
-    - /usr/local/evm
 env:
   global:
-    - PATH=$HOME/.evm/bin:$HOME/.cask/bin:$PATH
-before_install:
-  - sudo apt-add-repository -y ppa:ansible/ansible
-  - sudo apt-get update
-  - sudo apt-get install -y ansible
+    - PATH=$PATH:$HOME/.cask/bin:$HOME/.emacs/emacs-24.3/bin:$HOME/.emacs/emacs-24.4/bin:$HOME/.emacs/emacs-24.5/bin
 install:
-  - ./travis.sh
+  - ./scripts/deploy.sh
 script:
-  - ./ert.sh
+  - ./scripts/ert.sh
