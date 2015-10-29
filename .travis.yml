@@ -1,4 +1,5 @@
 language: emacs-lisp
+sudo: true
 cache:
   directories:
     - $HOME/.emacs
