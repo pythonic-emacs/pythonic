@@ -7,7 +7,7 @@ PROJECT_ROOT=/vagrant
 TRAMP_USER=test
 TRAMP_HOME=/home/$TRAMP_USER
 
-sudo adduser --quiet $TRAMP_USER
+sudo adduser --disabled-password --quiet $TRAMP_USER
 
 # Register tramp host.
 
