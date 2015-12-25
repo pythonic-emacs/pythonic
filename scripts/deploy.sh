@@ -1,6 +1,11 @@
 #!/bin/bash -e
 
-PROJECT_ROOT=/vagrant
+if [ -z "$TRAVIS_BUILD_DIR"]
+then
+    PROJECT_ROOT=$TRAVIS_BUILD_DIR
+else
+    PROJECT_ROOT=/vagrant
+fi
 
 # Create tramp user.
 
