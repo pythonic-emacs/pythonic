@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-if [ -z "$TRAVIS_BUILD_DIR"]
+if [ -z "$TRAVIS_BUILD_DIR" ]
 then
     PROJECT_ROOT=$TRAVIS_BUILD_DIR
 else
