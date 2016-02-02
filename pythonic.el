@@ -198,7 +198,8 @@ necessary.  SENTINEL must be a symbol of process sentinel
 function if necessary.  QUERY-ON-EXIT will be corresponding
 process flag."
   (let ((default-directory (pythonic-default-directory cwd))
-        (process-environment (copy-sequence process-environment)))
+        (process-environment (copy-sequence process-environment))
+        (buffer (and buffer (get-buffer-create buffer))))
     (pythonic-set-process-environment)
     (let ((process (apply 'start-file-process process buffer (pythonic-executable) args)))
       (when filter

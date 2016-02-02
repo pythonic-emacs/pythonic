@@ -306,6 +306,23 @@ remote host."
   (should (process-query-on-exit-flag
            (start-pythonic :process "out" :args '("-V") :query-on-exit t))))
 
+(ert-deftest test-start-pythonic-keep-serviceable-tramp-connection ()
+  "It is possible to work with remote host (use `find-file' for
+example) after we start pythonic process."
+  (unwind-protect
+      (let* ((python-shell-interpreter "/ssh:test@localhost:/usr/bin/python")
+             (buffer (generate-new-buffer-name "*out*"))
+             (process (start-pythonic :process "out"
+                                      :buffer buffer
+                                      :args '("-c" "raise SystemExit(1)"))))
+        (while (process-live-p process)
+          (accept-process-output process))
+        (find-file "/ssh:test@localhost:/home/test/x.py")
+        (should (get-buffer "x.py")))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
+
 ;;; Proper process environment detection.
 
 (ert-deftest test-start-pythonic-path-property ()
