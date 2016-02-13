@@ -58,7 +58,7 @@
         (should (s-equals-p "/ssh:test@localhost:/home/test/"
                             (pythonic-default-directory))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 (ert-deftest test-pythonic-default-directory-virtualenv-remote ()
@@ -68,7 +68,7 @@
         (should (s-equals-p "/ssh:test@localhost:/home/test/"
                             (pythonic-default-directory))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 ;;; Set PYTHONPATH variable.
@@ -112,7 +112,7 @@ successively calls."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 (ert-deftest test-pythonic-set-pythonpath-variable-tramp-exists ()
@@ -130,7 +130,7 @@ Respect existing PYTHONPATH on the remote host."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 (ert-deftest test-pythonic-set-pythonpath-variable-tramp-few-calls ()
@@ -146,7 +146,7 @@ successively calls on the remote host."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 ;;; PATH variable.
@@ -170,7 +170,7 @@ successively calls on the remote host."
                                  (with-current-buffer "*tramp/ssh test@localhost*"
                                    (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 ;;; Extra variables.
@@ -194,7 +194,7 @@ remote host."
                        (with-current-buffer "*tramp/ssh test@localhost*"
                          (buffer-string)))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 ;;; Call process.
@@ -321,7 +321,7 @@ example) after we start pythonic process."
         (should (get-buffer "x.py"))
         (kill-buffer "x.py"))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 ;;; Proper process environment detection.
@@ -350,7 +350,7 @@ example) after we start pythonic process."
                          'pythonic)
                         :path))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 (ert-deftest test-start-pythonic-pythonpath-property ()
@@ -380,7 +380,7 @@ Respect remote PYTHONPATH value."
                          'pythonic)
                         :pythonpath))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 (ert-deftest test-start-pythonic-connection-property ()
@@ -394,7 +394,7 @@ Respect remote PYTHONPATH value."
                          'pythonic)
                         :connection))))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 (ert-deftest test-start-pythonic-environment-property ()
@@ -461,7 +461,7 @@ change since process was start."
              (process (start-pythonic :process "out" :args '("-V"))))
         (should (pythonic-proper-environment-p process)))
     (kill-buffer "*tramp/ssh test@localhost*")
-    (setq tramp-current-connection)
+    (setq tramp-current-connection nil)
     (sleep-for 0.5)))
 
 ;;; Activate/deactivate environment.
