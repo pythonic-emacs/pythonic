@@ -1,8 +1,3 @@
-alias l='ls -CF'
-alias la='ls -A'
-alias ll='ls -alF'
-alias ls='ls --color=auto'
-
-export PATH=$PATH:$HOME/.cask/bin:$HOME/.emacs/emacs-24.3/bin:$HOME/.emacs/emacs-24.4/bin:$HOME/.emacs/emacs-24.5/bin
+export PATH=$HOME/.evm/bin:$HOME/.cask/bin:$PATH
 
 cd /vagrant

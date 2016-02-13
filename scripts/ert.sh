@@ -5,8 +5,9 @@ function info() {
     echo $emacs
 }
 
-for emacs in emacs-24.3 emacs-24.4 emacs-24.5
+for emacs in emacs-24.3 emacs-24.4 emacs-24.5 emacs-git-snapshot
 do
     info
-    EMACS=$emacs cask exec ert-runner "$@"
+    evm use $emacs
+    cask exec ert-runner "$@"
 done
