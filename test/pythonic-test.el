@@ -454,6 +454,16 @@ change since process was start."
          (python-shell-interpreter "/ssh:test@localhost:/path/to/the/python"))
     (should-not (pythonic-proper-environment-p process))))
 
+(ert-deftest test-pythonic-proper-environment-p-running-remote-interpreter ()
+  "`pythonic-proper-environment-p' is t if running remote interpreter isn't changed."
+  (unwind-protect
+      (let* ((python-shell-interpreter "/ssh:test@localhost:/path/to/the/python")
+             (process (start-pythonic :process "out" :args '("-V"))))
+        (should (pythonic-proper-environment-p process)))
+    (kill-buffer "*tramp/ssh test@localhost*")
+    (setq tramp-current-connection)
+    (sleep-for 0.5)))
+
 ;;; Activate/deactivate environment.
 
 (ert-deftest test-pythonic-activate ()
