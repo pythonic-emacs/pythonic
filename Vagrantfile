@@ -3,7 +3,7 @@ Vagrant.configure(2) do |config|
 
   ["install_tramp", "install_emacs_build_deps", "deploy"].each do |script|
     config.vm.provision "shell" do |shell|
-      shell.path = "script/#{script}.sh"
+      shell.path = "scripts/#{script}.sh"
       shell.privileged = false
       shell.keep_color = true
     end

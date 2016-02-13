@@ -49,4 +49,4 @@ cask --path /vagrant/ update
 
 # Copy bashrc.
 
-cp /vagrant/script/bashrc $HOME/.bashrc
+cp /vagrant/scripts/bashrc $HOME/.bashrc

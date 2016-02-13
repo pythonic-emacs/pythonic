@@ -15,10 +15,10 @@ before_install:
   - git clone https://github.com/cask/cask $HOME/.cask
   - evm config path /tmp
 install:
-  - ./script/install_tramp.sh
+  - ./scripts/install_tramp.sh
   - if [ $EVM_EMACS = emacs-git-snapshot ];
     then
-        ./script/install_emacs_build_deps.sh;
+        ./scripts/install_emacs_build_deps.sh;
     fi
   - evm install $EVM_EMACS --use
   - cask install
