@@ -1,6 +1,6 @@
 ;;; pythonic.el --- Utility functions for writing pythonic emacs package.  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2015 by Artem Malyshev
+;; Copyright (C) 2015-2016 by Artem Malyshev
 
 ;; Author: Artem Malyshev <proofit404@gmail.com>
 ;; URL: https://github.com/proofit404/pythonic
