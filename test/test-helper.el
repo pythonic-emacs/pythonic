@@ -15,6 +15,4 @@
 (defun empty (&rest ignored)
   "Do nothing.  All arguments will be IGNORED.")
 
-(provide 'test-helper)
-
 ;;; test-helper.el ends here
