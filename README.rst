@@ -7,7 +7,7 @@
 Pythonic
 ========
 
-|travis| |coveralls| |melpa|
+|melpa|
 
 Utility functions for writing pythonic emacs package.
 
