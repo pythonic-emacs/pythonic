@@ -22,19 +22,25 @@ Usage
 -----
 
 This library provide function for convenient running python on
-different platforms on local and remote hosts.
+different platforms on local and remote hosts including Docker
+containers.  To use ``pythonic`` with Docker you need to install
+`docker-tramp`_ Emacs package.
 
 You can use remote interpreter
 
 .. code:: lisp
 
     (setq python-shell-interpreter "/ssh:user@host:/usr/bin/python")
+    ;; or
+    (setq python-shell-interpreter "/docker:root@container:/usr/bin/python")
 
 You can use remote virtual environment
 
 .. code:: lisp
 
     (setq python-shell-virtualenv-root "/ssh:user@host:env")
+    ;; or
+    (setq python-shell-virtualenv-root "/docker:root@container:/src/app/env")
 
 ``python-shell-exec-path`` and ``python-shell-process-environment``
 will be translated to remote host too.
@@ -106,3 +112,4 @@ pythonic-deactivate
 Deactivate python virtual environment.
 
 .. _Melpa: http://melpa.org
+.. _docker-tramp: https://github.com/emacs-pe/docker-tramp.el
