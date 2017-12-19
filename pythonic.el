@@ -46,6 +46,11 @@
       (tramp-tramp-file-p pythonic-environment)
     (tramp-tramp-file-p python-shell-interpreter)))
 
+(defun pythonic-remote-docker-p ()
+  "Determine docker remote virtual environment."
+  (and (pythonic-remote-p)
+       (s-starts-with-p "/docker:" (pythonic-tramp-connection))))
+
 (defun pythonic-file-name (file)
   "Normalized FILE location with out tramp prefix."
   (if (tramp-tramp-file-p file)
