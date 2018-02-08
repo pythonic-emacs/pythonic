@@ -51,6 +51,34 @@
   (and (pythonic-remote-p)
        (s-starts-with-p "/docker:" (pythonic-tramp-connection))))
 
+(defun pythonic-remote-vagrant-p ()
+  "Determine vagrant remote virtual environment."
+  (and (pythonic-remote-p)
+       (s-equals-p (pythonic-remote-host) "localhost")
+       (s-equals-p (pythonic-remote-user) "vagrant")))
+
+(defun pythonic-remote-user ()
+  "Get user of the connection to the remote python interpreter."
+  (tramp-file-name-user
+   (tramp-dissect-file-name
+    (pythonic-tramp-connection))))
+
+(defun pythonic-remote-host ()
+  "Get host of the connection to the remote python interpreter."
+  (replace-regexp-in-string
+   "#.*\\'" ""
+   (tramp-file-name-host
+    (tramp-dissect-file-name
+     (pythonic-tramp-connection)))))
+
+(defun pythonic-remote-port ()
+  "Get port of the connection to the remote python interpreter."
+  (let ((hostname (tramp-file-name-host
+                   (tramp-dissect-file-name
+                    (pythonic-tramp-connection)))))
+    (when (s-contains-p "#" hostname)
+      (string-to-number (replace-regexp-in-string "\\`.*#" "" hostname)))))
+
 (defun pythonic-file-name (file)
   "Normalized FILE location with out tramp prefix."
   (if (tramp-tramp-file-p file)

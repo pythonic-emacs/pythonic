@@ -98,6 +98,60 @@ Determine if python environment has been changed since PROCESS was started.
       :process "pythonic"
       :args '("-V")))
 
+pythonic-remote-p
+~~~~~~~~~~~~~~~~~
+
+Determine remote or local virtual environment.
+
+.. code:: lisp
+
+    (pythonic-remote-p)
+
+pythonic-remote-docker-p
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Determine docker remote virtual environment.
+
+.. code:: lisp
+
+    (pythonic-remote-docker-p)
+
+pythonic-remote-vagrant-p
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Determine vagrant remote virtual environment.
+
+.. code:: lisp
+
+    (pythonic-remote-vagrant-p)
+
+pythonic-remote-user
+~~~~~~~~~~~~~~~~~~~~
+
+Get user of the connection to the remote python interpreter.
+
+.. code:: lisp
+
+    (pythonic-remote-user)
+
+pythonic-remote-host
+~~~~~~~~~~~~~~~~~~~~
+
+Get host of the connection to the remote python interpreter.
+
+.. code:: lisp
+
+    (pythonic-remote-host)
+
+pythonic-remote-port
+~~~~~~~~~~~~~~~~~~~~
+
+Get port of the connection to the remote python interpreter.
+
+.. code:: lisp
+
+    (pythonic-remote-port)
+
 Commands
 --------
 
