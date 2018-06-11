@@ -103,7 +103,8 @@
     (if (null alias-tuple)
         alias
       (concat (car alias-tuple)
-              (substring alias (length (cadr alias-tuple)))))))
+              (substring alias (min (length (cadr alias-tuple))
+                                    (length alias)))))))
 
 (defun pythonic-python-readable-file-name (filename)
   "Emacs to Python FILENAME conversion.
