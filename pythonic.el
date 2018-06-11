@@ -32,14 +32,21 @@
 (require 's)
 (require 'f)
 
+
+;;; Connection predicates.
+
+(defun pythonic-local-p ()
+  "Determine local virtual environment."
+  (not (pythonic-remote-p)))
+
 (defun pythonic-remote-p ()
-  "Determine remote or local virtual environment."
-  (tramp-tramp-file-p default-directory))
+  "Determine remote virtual environment."
+  (tramp-tramp-file-p (pythonic-aliased-path default-directory)))
 
 (defun pythonic-remote-docker-p ()
   "Determine docker remote virtual environment."
   (and (pythonic-remote-p)
-       (s-starts-with-p "/docker:" (pythonic-remote-connection))))
+       (s-equals-p (pythonic-remote-method) "docker")))
 
 (defun pythonic-remote-vagrant-p ()
   "Determine vagrant remote virtual environment."
@@ -47,45 +54,87 @@
        (s-equals-p (pythonic-remote-host) "localhost")
        (s-equals-p (pythonic-remote-user) "vagrant")))
 
+
+;;; Connection properties.
+
+(defun pythonic-remote-method ()
+  "Get tramp method of the connection to the remote python interpreter."
+  (tramp-file-name-method (tramp-dissect-file-name (pythonic-aliased-path default-directory))))
+
 (defun pythonic-remote-user ()
   "Get user of the connection to the remote python interpreter."
-  (tramp-file-name-user (tramp-dissect-file-name (pythonic-remote-connection))))
+  (tramp-file-name-user (tramp-dissect-file-name (pythonic-aliased-path default-directory))))
 
 (defun pythonic-remote-host ()
   "Get host of the connection to the remote python interpreter."
-  (replace-regexp-in-string
-   "#.*\\'" ""
-   (tramp-file-name-host (tramp-dissect-file-name (pythonic-remote-connection)))))
+  (let ((hostname (tramp-file-name-host (tramp-dissect-file-name (pythonic-aliased-path default-directory)))))
+    (replace-regexp-in-string "#.*\\'" "" hostname)))
 
 (defun pythonic-remote-port ()
   "Get port of the connection to the remote python interpreter."
-  (let ((hostname (tramp-file-name-host (tramp-dissect-file-name (pythonic-remote-connection)))))
+  (let ((hostname (tramp-file-name-host (tramp-dissect-file-name (pythonic-aliased-path default-directory)))))
     (when (s-contains-p "#" hostname)
       (string-to-number (replace-regexp-in-string "\\`.*#" "" hostname)))))
 
-(defun pythonic-local-file-name (file)
-  "Local FILE name with out tramp prefix."
-  (if (tramp-tramp-file-p file)
-      (tramp-file-name-localname (tramp-dissect-file-name file))
-    file))
+
+;;; File names.
 
-(defun pythonic-real-file-name (file)
-  "Probably Remote FILE name with tramp prefix."
-  (if (and (pythonic-remote-p)
-           (not (tramp-tramp-file-p file)))
-      (concat (pythonic-remote-connection) file)
-    file))
+(defvar pythonic-directory-aliases nil)
 
-(defun pythonic-real-directory-name (directory)
-  "Generate `default-directory' FROM-DIRECTORY."
-  (let ((default-directory (pythonic-real-file-name directory)))
-    (f-full default-directory)))
+(defun pythonic-aliased-path (path)
+  "Get aliased PATH."
+  (let ((alias-tuple (cl-find-if
+                      (lambda (it)
+                        (or (f-same-p (car it) path)
+                            (f-ancestor-of-p (car it) path)))
+                      pythonic-directory-aliases)))
+    (if (null alias-tuple)
+        path
+      (concat (cadr alias-tuple)
+              (substring path (length (car alias-tuple)))))))
 
-(defun pythonic-remote-connection ()
-  "Tramp connection string or nil."
-  (when (pythonic-remote-p)
-    (substring default-directory 0 (- (length default-directory)
-                                      (length (pythonic-local-file-name default-directory))))))
+(defun pythonic-unaliased-path (alias)
+  "Get real path from ALIAS."
+  (let ((alias-tuple (cl-find-if
+                      (lambda (it)
+                        (or (f-same-p (cadr it) alias)
+                            (f-ancestor-of-p (cadr it) alias)))
+                      pythonic-directory-aliases)))
+    (if (null alias-tuple)
+        alias
+      (concat (car alias-tuple)
+              (substring alias (length (cadr alias-tuple)))))))
+
+(defun pythonic-python-readable-file-name (filename)
+  "Emacs to Python FILENAME conversion.
+Take FILENAME from the perspective of the localhost and translate
+it to the FILENAME Python process can read.  Python can be
+running locally or remotely.  FILENAME can have local or tramp
+format.  Result will have local format."
+  (let ((alias (pythonic-aliased-path filename)))
+    (if (tramp-tramp-file-p alias)
+        (tramp-file-name-localname (tramp-dissect-file-name alias))
+      alias)))
+
+(defun pythonic-emacs-readable-file-name (filename)
+  "Python to Emacs FILENAME conversion.
+Take FILENAME from the perspective of the python interpreter and
+translate it to the FILENAME Emacs `find-file' command can
+understand.  Python can be running locally or remotely.  FILENAME
+should have local format.  Result can have local or tramp
+format."
+  (when (tramp-tramp-file-p filename)
+    (error "%s can not be tramp path" filename))
+  (if (pythonic-remote-p)
+      (let* ((directory (pythonic-aliased-path default-directory))
+             (connection (substring directory 0
+                                    (- (length directory)
+                                       (length (tramp-file-name-localname (tramp-dissect-file-name directory)))))))
+        (pythonic-unaliased-path (concat connection filename)))
+    filename))
+
+
+;;; Processes.
 
 (cl-defun pythonic-call-process (&key file buffer display args cwd)
   "Pythonic wrapper around `call-process'.
@@ -94,7 +143,7 @@ FILE is the input file. BUFFER is the output destination. DISPLAY
 specifies to redisplay BUFFER on new output. ARGS is the list of
 arguments passed to `call-process'. CWD will be working directory
 for running process."
-  (let ((default-directory (pythonic-real-directory-name (or cwd "~"))))
+  (let ((default-directory (pythonic-aliased-path (or cwd default-directory))))
     (python-shell-with-environment
       (apply 'process-file python-shell-interpreter file buffer display args))))
 
@@ -108,7 +157,7 @@ process.  FILTER must be a symbol of process filter function if
 necessary.  SENTINEL must be a symbol of process sentinel
 function if necessary.  QUERY-ON-EXIT will be corresponding
 process flag."
-  (let ((default-directory (pythonic-real-directory-name (or cwd "~"))))
+  (let ((default-directory (pythonic-aliased-path (or cwd default-directory))))
     (python-shell-with-environment
       (let ((process (apply 'start-file-process process buffer python-shell-interpreter args)))
         (when filter
@@ -118,12 +167,14 @@ process flag."
         (set-process-query-on-exit-flag process query-on-exit)
         process))))
 
+
+;;; Commands.
+
 ;;;###autoload
 (defun pythonic-activate (virtualenv)
   "Activate python VIRTUALENV."
   (interactive "DEnv: ")
-  (setq python-shell-virtualenv-root
-	(pythonic-local-file-name (pythonic-real-directory-name virtualenv))))
+  (setq python-shell-virtualenv-root (pythonic-python-readable-file-name virtualenv)))
 
 ;;;###autoload
 (defun pythonic-deactivate ()
