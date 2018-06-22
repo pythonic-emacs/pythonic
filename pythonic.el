@@ -91,7 +91,7 @@
     (if (null alias-tuple)
         path
       (f-join (cadr alias-tuple)
-              (substring path (length (car alias-tuple)))))))
+              (f-relative path (car alias-tuple))))))
 
 (defun pythonic-unaliased-path (alias)
   "Get real path from ALIAS."
@@ -103,8 +103,7 @@
     (if (null alias-tuple)
         alias
       (f-join (car alias-tuple)
-              (substring alias (min (length (cadr alias-tuple))
-                                    (length alias)))))))
+              (f-relative alias (cadr alias-tuple))))))
 
 (defun pythonic-has-alias-p (path)
   "Check if given PATH has alias."
