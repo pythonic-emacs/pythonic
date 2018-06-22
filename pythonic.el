@@ -90,7 +90,7 @@
                       pythonic-directory-aliases)))
     (if (null alias-tuple)
         path
-      (concat (cadr alias-tuple)
+      (f-join (cadr alias-tuple)
               (substring path (length (car alias-tuple)))))))
 
 (defun pythonic-unaliased-path (alias)
@@ -102,7 +102,7 @@
                       pythonic-directory-aliases)))
     (if (null alias-tuple)
         alias
-      (concat (car alias-tuple)
+      (f-join (car alias-tuple)
               (substring alias (min (length (cadr alias-tuple))
                                     (length alias)))))))
 
