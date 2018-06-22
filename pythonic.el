@@ -106,6 +106,14 @@
               (substring alias (min (length (cadr alias-tuple))
                                     (length alias)))))))
 
+(defun pythonic-has-alias-p (path)
+  "Check if given PATH has alias."
+  (not (null (cl-find-if
+              (lambda (it)
+                (or (f-same-p (car it) path)
+                    (f-ancestor-of-p (car it) path)))
+              pythonic-directory-aliases))))
+
 (defun pythonic-python-readable-file-name (filename)
   "Emacs to Python FILENAME conversion.
 Take FILENAME from the perspective of the localhost and translate
