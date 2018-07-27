@@ -184,8 +184,13 @@ print(json.dumps(yaml.safe_load(open(sys.argv[-1], 'r'))))
 (defun pythonic-get-docker-compose-container (filename service)
   "Get container name from the FILENAME project for SERVICE name."
   (s-trim
-   ;; FIXME: It is possible to have many running containers for given
+   ;; FIXME:
+   ;;
+   ;; It is possible to have many running containers for given
    ;; service.
+   ;;
+   ;; Use container name, not the hash.  This way we can survive
+   ;; service recreation.
    (with-output-to-string
      (with-current-buffer
          standard-output
