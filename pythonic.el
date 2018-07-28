@@ -48,6 +48,11 @@
   (and (pythonic-remote-p)
        (s-equals-p (pythonic-remote-method) "docker")))
 
+(defun pythonic-remote-ssh-p ()
+  "Determine ssh remote virtual environment."
+  (and (pythonic-remote-p)
+       (s-equals-p (pythonic-remote-method) "ssh")))
+
 (defun pythonic-remote-vagrant-p ()
   "Determine vagrant remote virtual environment."
   (and (pythonic-remote-p)
