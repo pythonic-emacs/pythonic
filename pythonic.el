@@ -77,7 +77,10 @@
 
 (defun pythonic-remote-port ()
   "Get port of the connection to the remote python interpreter."
-  (string-to-number (tramp-file-name-port (tramp-dissect-file-name (pythonic-aliased-path default-directory)))))
+  (let ((port (tramp-file-name-port (tramp-dissect-file-name (pythonic-aliased-path default-directory)))))
+    (if (stringp port)
+        (string-to-number port)
+      port)))
 
 
 ;;; File names.
