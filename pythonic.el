@@ -78,6 +78,8 @@
 (defun pythonic-remote-port ()
   "Get port of the connection to the remote python interpreter."
   (let ((port (tramp-file-name-port (tramp-dissect-file-name (pythonic-aliased-path default-directory)))))
+    ;; In Emacs 25, `tramp-file-name-port' returns number,
+    ;; in Emacs 26, it returns string. This condition makes them compatible.
     (if (stringp port)
         (string-to-number port)
       port)))
