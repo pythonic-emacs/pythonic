@@ -41,7 +41,8 @@
 
 (defun pythonic-remote-p ()
   "Determine remote virtual environment."
-  (tramp-tramp-file-p (pythonic-aliased-path default-directory)))
+  (and (tramp-tramp-file-p (pythonic-aliased-path default-directory))
+       t))
 
 (defun pythonic-remote-docker-p ()
   "Determine docker remote virtual environment."
