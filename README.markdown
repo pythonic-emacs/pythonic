@@ -120,3 +120,13 @@ Activate python virtual environment.  Tramp paths are supported.
 ### pythonic-deactivate
 
 Deactivate python virtual environment.
+
+
+## Project overrides with .dir-locals
+You can change the default docker file and set a default
+container to run the pythonic commands in with these dir-locals.
+
+```lisp
+((python . ((pythonic-docker-compose-filename . "local.yml")
+            (pythonic-docker-compose-container-name . "footprint"))))
+```
