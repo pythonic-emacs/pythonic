@@ -133,3 +133,11 @@ directory.
 ((python . ((pythonic-docker-compose-filename . "local.yml")
             (pythonic-docker-compose-service-name . "web"))))
 ```
+
+You can change the interpreter that pythonic uses. This is especially useful when you have set your `python-shell-interpreter` to something like `jupyter-console`. By default, it'll use `python-shell-interpreter`.
+
+To change it:
+
+```lisp
+(setq pythonic-interpreter "python")
+```
