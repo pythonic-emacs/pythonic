@@ -5,7 +5,7 @@
 ;; Author: Artem Malyshev <proofit404@gmail.com>
 ;; URL: https://github.com/proofit404/pythonic
 ;; Version: 0.1.1
-;; Package-Requires: ((emacs "25") (s "1.9") (f "0.17.2"))
+;; Package-Requires: ((emacs "25.1") (s "1.9") (f "0.17.2"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
