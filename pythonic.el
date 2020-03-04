@@ -132,7 +132,7 @@ Take FILENAME from the perspective of the localhost and translate
 it to the FILENAME Python process can read.  Python can be
 running locally or remotely.  FILENAME can have local or tramp
 format.  Result will have local format."
-  (let ((alias (pythonic-aliased-path filename)))
+  (let ((alias (pythonic-aliased-path (expand-file-name filename))))
     (if (tramp-tramp-file-p alias)
         (tramp-file-name-localname (tramp-dissect-file-name alias))
       alias)))
