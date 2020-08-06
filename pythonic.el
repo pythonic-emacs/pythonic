@@ -56,7 +56,7 @@
 (defun pythonic-remote-ssh-p ()
   "Determine ssh remote virtual environment."
   (and (pythonic-remote-p)
-       (s-equals-p (pythonic-remote-method) "ssh")))
+       (member (pythonic-remote-method) '("ssh" "sshx"))))
 
 (defun pythonic-remote-vagrant-p ()
   "Determine vagrant remote virtual environment."
