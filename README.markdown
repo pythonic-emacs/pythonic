@@ -1,4 +1,4 @@
-# Pythonic [![MELPA](http://www.melpa.org/packages/pythonic-badge.svg)](http://www.melpa.org/#/pythonic)     [![MELPA Stable](https://stable.melpa.org/packages/pythonic-badge.svg)](https://stable.melpa.org/#/pythonic)
+# Pythonic [![MELPA](https://melpa.org/packages/pythonic-badge.svg)](https://melpa.org/#/pythonic)     [![MELPA Stable](https://stable.melpa.org/packages/pythonic-badge.svg)](https://stable.melpa.org/#/pythonic)
 
 Utility functions for writing pythonic emacs package.
 
