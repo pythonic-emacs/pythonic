@@ -295,7 +295,8 @@ process flag."
 (defun pythonic-activate (virtualenv)
   "Activate python VIRTUALENV."
   (interactive "DEnv: ")
-  (setq python-shell-virtualenv-root (pythonic-python-readable-file-name virtualenv)))
+  (setq python-shell-virtualenv-root
+        (and virtualenv (pythonic-python-readable-file-name virtualenv))))
 
 ;;;###autoload
 (defun pythonic-deactivate ()
