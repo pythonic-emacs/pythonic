@@ -1,3 +1,6 @@
 *~
 .cask/
+.eask/
+/dist
+*.elc
 .vagrant/
