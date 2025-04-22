@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "pythonic"
          "0.2"
          "Utility functions for writing pythonic emacs package")
